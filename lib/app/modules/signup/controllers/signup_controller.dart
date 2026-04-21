@@ -17,6 +17,7 @@ class SignupController extends GetxController {
   final isPasswordVisible = false.obs;
   final isConfirmPasswordVisible = false.obs;
   final isLoading = false.obs;
+  final formKey = GlobalKey<FormState>();
 
   @override
   void onInit() {
@@ -34,32 +35,9 @@ class SignupController extends GetxController {
     isConfirmPasswordVisible.value = !isConfirmPasswordVisible.value;
   }
 
-  bool _validate() {
-    if (firstName.value.isEmpty || lastName.value.isEmpty) {
-      Get.snackbar('Error', 'Please enter your first and last name', 
-        backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.white);
-      return false;
-    }
-    if (!GetUtils.isEmail(email.value)) {
-      Get.snackbar('Error', 'Please enter a valid email', 
-        backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.white);
-      return false;
-    }
-    if (password.value.length < 6) {
-      Get.snackbar('Error', 'Password must be at least 6 characters', 
-        backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.white);
-      return false;
-    }
-    if (password.value != confirmPassword.value) {
-      Get.snackbar('Error', 'Passwords do not match', 
-        backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.white);
-      return false;
-    }
-    return true;
-  }
 
   Future<void> signup() async {
-    if (!_validate()) return;
+    if (formKey.currentState?.validate() != true) return;
 
     try {
       isLoading.value = true;

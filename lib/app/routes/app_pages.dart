@@ -12,6 +12,8 @@ import '../modules/signup/bindings/signup_binding.dart';
 import '../modules/signup/views/signup_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
+import '../modules/create_campaign/bindings/create_campaign_binding.dart';
+import '../modules/create_campaign/views/create_campaign_view.dart';
 
 part 'app_routes.dart';
 
@@ -50,6 +52,11 @@ class AppPages {
       name: _Paths.REGISTER_ROLE,
       page: () => const RegisterRoleView(),
       binding: RegisterRoleBinding(),
+    ),
+    GetPage(
+      name: _Paths.CREATE_CAMPAIGN,
+      page: () => const CreateCampaignView(),
+      binding: CreateCampaignBinding(),
     ),
   ];
 }
