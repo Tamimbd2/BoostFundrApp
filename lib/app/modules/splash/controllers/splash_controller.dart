@@ -1,15 +1,20 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../../routes/app_pages.dart';
 
 class SplashController extends GetxController {
-  //TODO: Implement SplashController
+  final storage = GetStorage();
 
-  final count = 0.obs;
   @override
   void onInit() {
     super.onInit();
     Future.delayed(const Duration(seconds: 3), () {
-      Get.offAllNamed('/select-language');
+      final token = storage.read('token');
+      if (token != null && token.toString().isNotEmpty) {
+        Get.offAllNamed('/home');
+      } else {
+        Get.offAllNamed('/select-language');
+      }
     });
   }
 
@@ -22,6 +27,4 @@ class SplashController extends GetxController {
   void onClose() {
     super.onClose();
   }
-
-  void increment() => count.value++;
 }

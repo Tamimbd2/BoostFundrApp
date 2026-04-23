@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../../../data/providers/auth_provider.dart';
 
 class LoginController extends GetxController {
   final AuthProvider _authProvider = Get.find<AuthProvider>();
+  final storage = GetStorage();
 
   final email = ''.obs;
   final password = ''.obs;
@@ -56,8 +58,24 @@ class LoginController extends GetxController {
           colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM,
         );
-        // Navigate to home or store token
-        Get.offAllNamed('/home');
+        
+        // Save token and navigate
+        final data = response.body['data'];
+        final token = response.body['token'] ?? 
+                      response.body['access_token'] ?? 
+                      (data is Map ? data['token'] : null);
+        
+        if (token != null) {
+          storage.write('token', token);
+          if (data is Map && data['user'] != null) {
+            storage.write('user', data['user']);
+          }
+          Get.offAllNamed('/home');
+        } else {
+          // If no token is found, still navigate to home if the response was OK, 
+          // or handle as error if token is mandatory
+          Get.offAllNamed('/home');
+        }
       } else {
         String message = response.body?['message'] ?? 'Login failed';
         Get.snackbar(

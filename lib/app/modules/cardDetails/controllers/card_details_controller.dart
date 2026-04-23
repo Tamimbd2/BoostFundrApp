@@ -1,0 +1,176 @@
+import 'dart:convert';
+import 'package:flutter/foundation.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:http/http.dart' as http;
+
+class CardDetailsController extends GetxController {
+  final _storage = GetStorage();
+
+  final isLoading = true.obs;
+  final hasError = false.obs;
+  final errorMessage = ''.obs;
+  final dealData = Rxn<Map<String, dynamic>>();
+
+  String get dealId => Get.arguments as String? ?? '';
+
+  @override
+  void onInit() {
+    super.onInit();
+    fetchDealDetail();
+  }
+
+  Future<void> fetchDealDetail() async {
+    try {
+      isLoading.value = true;
+      hasError.value = false;
+      errorMessage.value = '';
+
+      final id = dealId;
+      final token = _storage.read('token');
+
+      // Debugging
+      debugPrint('[CardDetails] Fetching ID: $id');
+      debugPrint('[CardDetails] Token present: ${token != null}');
+
+      if (id.isEmpty) {
+        hasError.value = true;
+        errorMessage.value = 'No deal ID provided';
+        return;
+      }
+
+      final uri = Uri.parse(
+        'https://boost-funder.onrender.com/api/v1/deals/feed/$id',
+      );
+
+      final response = await http
+          .get(
+            uri,
+            headers: {
+              if (token != null) 'Authorization': 'Bearer $token',
+              'Accept': 'application/json',
+              'Content-Type': 'application/json',
+            },
+          )
+          .timeout(const Duration(seconds: 30));
+
+      debugPrint('[CardDetails] Response Status: ${response.statusCode}');
+      debugPrint('[CardDetails] Response Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final json = jsonDecode(response.body) as Map<String, dynamic>;
+        if (json['data'] != null) {
+          dealData.value = Map<String, dynamic>.from(json['data']);
+        } else {
+          hasError.value = true;
+          errorMessage.value = 'Data field is null in response';
+        }
+      } else {
+        hasError.value = true;
+        final errorJson = jsonDecode(response.body);
+        errorMessage.value =
+            errorJson['message'] ?? 'Error ${response.statusCode}';
+      }
+    } catch (e) {
+      hasError.value = true;
+      errorMessage.value = 'Connection Error: $e';
+      debugPrint('[CardDetails] Exception: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  // ── Field helpers ─────────────────────────────────────────
+  String get startupName => dealData.value?['startupName'] ?? '—';
+  String get shortPitch => dealData.value?['shortPitch'] ?? '—';
+  String get category => dealData.value?['category'] ?? '—';
+  String get stage => dealData.value?['stage'] ?? '—';
+  String get status => dealData.value?['status'] ?? '—';
+  String get location => dealData.value?['location'] ?? '—';
+  String get problem => dealData.value?['problem'] ?? '—';
+  String get solution => dealData.value?['solution'] ?? '—';
+  String get tagline => dealData.value?['tagline'] ?? '—';
+  String get currency => dealData.value?['currency'] ?? 'AED';
+  int get goalAmount {
+    final data = dealData.value;
+    if (data == null) return 0;
+    if (data['raised'] != null && data['raised']['goal'] != null) {
+      return (data['raised']['goal'] as num).toInt();
+    }
+    return (data['goalAmount'] as num?)?.toInt() ?? 0;
+  }
+
+  int get raisedAmount {
+    final data = dealData.value;
+    if (data == null) return 0;
+    if (data['raised'] != null && data['raised']['amount'] != null) {
+      return (data['raised']['amount'] as num).toInt();
+    }
+    return (data['raisedAmount'] as num?)?.toInt() ?? 0;
+  }
+
+  double get raisedProgress {
+    final data = dealData.value;
+    if (data == null) return 0.0;
+    if (data['raised'] != null && data['raised']['progress'] != null) {
+      return (data['raised']['progress'] as num).toDouble() / 100.0;
+    }
+    // Fallback to manual calculation if progress field is missing
+    final goal = goalAmount;
+    if (goal <= 0) return 0.0;
+    return (raisedAmount / goal).clamp(0.0, 1.0);
+  }
+  int get profileScore =>
+      (dealData.value?['profileCompletionScore'] as num?)?.toInt() ?? 0;
+  String get deadline => dealData.value?['deadline'] ?? '';
+  bool get isVerified =>
+      dealData.value?['verificationBadge']?['isVerified'] == true;
+
+  List<String> get media =>
+      (dealData.value?['media'] as List?)?.map((e) => e.toString()).toList() ??
+      [];
+
+  List<String> get tractionHighlights =>
+      (dealData.value?['tractionHighlights'] as List?)
+          ?.map((e) => e.toString())
+          .toList() ??
+      [];
+
+  List<String> get faq =>
+      (dealData.value?['faq'] as List?)?.map((e) => e.toString()).toList() ??
+      [];
+
+  String get deadlineFormatted {
+    if (deadline.isEmpty) return '—';
+    try {
+      final dt = DateTime.parse(deadline);
+      const months = [
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'May',
+        'Jun',
+        'Jul',
+        'Aug',
+        'Sep',
+        'Oct',
+        'Nov',
+        'Dec',
+      ];
+      return '${dt.day} ${months[dt.month - 1]} ${dt.year}';
+    } catch (_) {
+      return '—';
+    }
+  }
+
+  int get daysLeft {
+    if (deadline.isEmpty) return 0;
+    try {
+      final dt = DateTime.parse(deadline);
+      return dt.difference(DateTime.now()).inDays.clamp(0, 9999);
+    } catch (_) {
+      return 0;
+    }
+  }
+}

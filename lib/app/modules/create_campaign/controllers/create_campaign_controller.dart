@@ -16,18 +16,62 @@ class CreateCampaignController extends GetxController {
   final financialDetailsController = TextEditingController();
   final detailedTractionDataController = TextEditingController();
   final privateDocumentsController = TextEditingController();
+  final goalAmountController = TextEditingController();
+  final currencyController = TextEditingController();
+  final deadlineController = TextEditingController();
+  final raisedAmountController = TextEditingController();
+  
+  // Missing schema fields
+  final locationController = TextEditingController();
+  final taglineController = TextEditingController();
+  final problemController = TextEditingController();
+  final solutionController = TextEditingController();
+  final businessModelController = TextEditingController();
+  final marketController = TextEditingController();
+  final tractionController = TextEditingController();
+  final founderDetailsController = TextEditingController();
+  final teamController = TextEditingController();
+  final geographyController = TextEditingController();
+  final useOfFundsController = TextEditingController();
+  final faqController = TextEditingController();
 
   final category = 'AI'.obs;
-  final stage = 'Seed'.obs;
+  final stage = 'MVP'.obs;
   
-  final tractionHighlights = <String>['500+ users', '12% MoM growth'].obs;
+  final tractionHighlights = <String>[].obs;
   final selectedImages = <XFile>[].obs;
   final _picker = ImagePicker();
 
   final isLoading = false.obs;
 
-  final categories = ['AI', 'HealthTech', 'FinTech', 'E-commerce', 'SaaS'];
-  final stages = ['Ideation', 'Seed', 'MVP', 'Series A', 'Series B'];
+  final categories = ['AI', 'HealthTech', 'FinTech', 'E-commerce', 'SaaS', 'Other'];
+  final stages = ['idea', 'MVP', 'growth', 'scale'];
+
+  Future<void> chooseDate() async {
+    DateTime? pickedDate = await showDatePicker(
+      context: Get.context!,
+      initialDate: DateTime.now().add(const Duration(days: 30)),
+      firstDate: DateTime.now(),
+      lastDate: DateTime(2030),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.dark(
+              primary: Color(0xFF22C55E),
+              onPrimary: Colors.white,
+              surface: Color(0xFF111111),
+              onSurface: Colors.white,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+
+    if (pickedDate != null) {
+      deadlineController.text = "${pickedDate.year}-${pickedDate.month.toString().padLeft(2, '0')}-${pickedDate.day.toString().padLeft(2, '0')}";
+    }
+  }
 
   Future<void> pickImages() async {
     final List<XFile> images = await _picker.pickMultiImage();
@@ -69,12 +113,27 @@ class CreateCampaignController extends GetxController {
         'shortPitch': shortPitchController.text,
         'category': category.value,
         'stage': stage.value,
+        'goalAmount': int.tryParse(goalAmountController.text) ?? 0,
+        'raisedAmount': int.tryParse(raisedAmountController.text) ?? 0,
+        'currency': currencyController.text,
+        'deadline': deadlineController.text,
+        'location': locationController.text,
+        'tagline': taglineController.text,
+        'problem': problemController.text,
+        'solution': solutionController.text,
+        'businessModel': businessModelController.text,
+        'market': marketController.text,
+        'traction': tractionController.text,
+        'founderDetails': founderDetailsController.text,
+        'team': teamController.text,
+        'geography': geographyController.text,
+        'useOfFunds': useOfFundsController.text,
         'founderContact': founderContactController.text,
         'pitchDeck': pitchDeckController.text,
         'financialDetails': financialDetailsController.text,
         'detailedTractionData': detailedTractionDataController.text,
         'privateDocuments': privateDocumentsController.text,
-        'tractionHighlights': tractionHighlights.toList(),
+        'faq': faqController.text.isNotEmpty ? [faqController.text] : [],
         'media': imageFiles,
       });
 
@@ -153,6 +212,9 @@ class CreateCampaignController extends GetxController {
     financialDetailsController.dispose();
     detailedTractionDataController.dispose();
     privateDocumentsController.dispose();
+    goalAmountController.dispose();
+    currencyController.dispose();
+    deadlineController.dispose();
     super.onClose();
   }
 }

@@ -1,7 +1,10 @@
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import '../api_constants.dart';
 
 class DealsProvider extends GetConnect {
+  final storage = GetStorage();
+
   @override
   void onInit() {
     httpClient.baseUrl = ApiConstants.baseUrl;
@@ -9,24 +12,47 @@ class DealsProvider extends GetConnect {
   }
 
   Future<Response> getAllDeals() async {
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWU2M2NlNDAwMzQyNjBjMjRiNzM2NDUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzY3Nzc4NzQsImV4cCI6MTc3NzM4MjY3NH0.HcYVYYT2rFPnsul2ZhOYy2vz37CbDnf4_UEBD0LOj2k';
+    final token = storage.read('token');
     return get(
       ApiConstants.dealsAll,
       headers: {
-        'Authorization': 'Bearer $token',
+        if (token != null) 'Authorization': 'Bearer $token',
+        'content-type': 'application/json',
+      },
+    );
+  }
+
+  Future<Response> getDealsFeed() async {
+    final token = storage.read('token');
+    return get(
+      ApiConstants.dealsFeedList,
+      headers: {
+        if (token != null) 'Authorization': 'Bearer $token',
+        'content-type': 'application/json',
+      },
+    );
+  }
+
+  Future<Response> getDealById(String id) async {
+    final token = storage.read('token');
+    return get(
+      '${ApiConstants.dealFeed}/$id',
+      headers: {
+        if (token != null) 'Authorization': 'Bearer $token',
         'content-type': 'application/json',
       },
     );
   }
 
   Future<Response> createDeal(FormData data) async {
-    const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2OWU2M2NlNDAwMzQyNjBjMjRiNzM2NDUiLCJyb2xlIjoiYWRtaW4iLCJpYXQiOjE3NzY3Nzc4NzQsImV4cCI6MTc3NzM4MjY3NH0.HcYVYYT2rFPnsul2ZhOYy2vz37CbDnf4_UEBD0LOj2k';
+    final token = storage.read('token');
     return post(
       '/deals',
       data,
       headers: {
-        'Authorization': 'Bearer $token',
+        if (token != null) 'Authorization': 'Bearer $token',
       },
     );
   }
 }
+
