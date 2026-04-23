@@ -266,50 +266,24 @@ class HomeView extends GetView<HomeController> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Left Side: Image + Overlapping Badge
-            Stack(
-              clipBehavior: Clip.none,
-              children: [
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: Image.network(
-                    deal.imageUrl ?? '',
-                    width: 80,
-                    height: 80,
-                    fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
-                      width: 80,
-                      height: 80,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF1C2333),
-                        borderRadius: BorderRadius.circular(14),
-                      ),
-                      child: const Icon(Icons.image, color: Colors.white24, size: 28),
-                    ),
+            // Left Side: Image
+            ClipRRect(
+              borderRadius: BorderRadius.circular(14),
+              child: Image.network(
+                deal.imageUrl ?? '',
+                width: 80,
+                height: 80,
+                fit: BoxFit.cover,
+                errorBuilder: (_, __, ___) => Container(
+                  width: 80,
+                  height: 80,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFF1C2333),
+                    borderRadius: BorderRadius.circular(14),
                   ),
+                  child: const Icon(Icons.image, color: Colors.white24, size: 28),
                 ),
-                // Overlapping percentage badge
-                Positioned(
-                  bottom: -8,
-                  left: -8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFF111111),
-                      borderRadius: BorderRadius.circular(20),
-                      border: Border.all(color: scoreColor, width: 2),
-                    ),
-                    child: Text(
-                      '$profileScore%',
-                      style: TextStyle(
-                        color: scoreColor,
-                        fontSize: 12,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+              ),
             ),
             const SizedBox(width: 14),
 
