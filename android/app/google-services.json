@@ -1,42 +1,49 @@
 {
   "project_info": {
-    "project_number": "1033363598277",
-    "project_id": "boostfunder-9f44d",
-    "storage_bucket": "boostfunder-9f44d.firebasestorage.app"
+    "project_number": "1023406758540",
+    "project_id": "boost-fundr",
+    "storage_bucket": "boost-fundr.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1033363598277:android:a6b240229539f53b4879ac",
+        "mobilesdk_app_id": "1:1023406758540:android:41788b0639bf9bfe84b9a9",
         "android_client_info": {
-          "package_name": "com.boostfunder.app"
+          "package_name": "com.boostfunder"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1033363598277-562d137u0bldvmhgdbq69bc0fin8qk3k.apps.googleusercontent.com",
+          "client_id": "1023406758540-h5deikmv8ijfr43pf4jlvcapmgoagr4t.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.boostfunder.app",
+            "package_name": "com.boostfunder",
             "certificate_hash": "8edbac03e3b9831badc6b5f17739631e180fc320"
           }
         },
         {
-          "client_id": "1033363598277-a6ad1aqn3l2r77s8h5urnro55r77h53h.apps.googleusercontent.com",
+          "client_id": "1023406758540-8ojtga763n2r7b7i2v0nt0mc1ijuthec.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBzpV_7dEQllDxEGkc8ZTpRQUAGV4RvjXE"
+          "current_key": "AIzaSyBPAH7kCUZKpNiLg5KvupZ53tO8FYXBnqY"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "1033363598277-a6ad1aqn3l2r77s8h5urnro55r77h53h.apps.googleusercontent.com",
+              "client_id": "1023406758540-8ojtga763n2r7b7i2v0nt0mc1ijuthec.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "1023406758540-ktoaecpa0mu4pejblbev56s9jssv4muq.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.boostfunder"
+              }
             }
           ]
         }

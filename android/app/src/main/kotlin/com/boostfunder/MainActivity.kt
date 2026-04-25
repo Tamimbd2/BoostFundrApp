@@ -1,4 +1,4 @@
-package com.boostfunder.app
+package com.boostfunder
 
 import io.flutter.embedding.android.FlutterActivity
 
