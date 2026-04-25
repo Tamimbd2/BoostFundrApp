@@ -1,4 +1,4 @@
-package com.example.boost_fundr
+package com.boostfunder.app
 
 import io.flutter.embedding.android.FlutterActivity
 

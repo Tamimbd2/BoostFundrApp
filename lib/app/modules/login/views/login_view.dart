@@ -159,7 +159,7 @@ class LoginView extends GetView<LoginController> {
                       _SocialButton(
                         icon: Icons.g_mobiledata,
                         label: 'Google',
-                        onTap: () {},
+                        onTap: controller.loginWithGoogle,
                       ),
                       const SizedBox(width: 16),
                       _SocialButton(

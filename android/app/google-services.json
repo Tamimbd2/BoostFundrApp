@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1033363598277",
+    "project_id": "boostfunder-9f44d",
+    "storage_bucket": "boostfunder-9f44d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1033363598277:android:a6b240229539f53b4879ac",
+        "android_client_info": {
+          "package_name": "com.boostfunder.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1033363598277-562d137u0bldvmhgdbq69bc0fin8qk3k.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.boostfunder.app",
+            "certificate_hash": "8edbac03e3b9831badc6b5f17739631e180fc320"
+          }
+        },
+        {
+          "client_id": "1033363598277-a6ad1aqn3l2r77s8h5urnro55r77h53h.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBzpV_7dEQllDxEGkc8ZTpRQUAGV4RvjXE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1033363598277-a6ad1aqn3l2r77s8h5urnro55r77h53h.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

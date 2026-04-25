@@ -8,5 +8,6 @@ class AuthProvider extends GetConnect {
   }
 
   Future<Response> login(Map data) => post(ApiConstants.login, data);
+  Future<Response> googleLogin(Map data) => post(ApiConstants.googleLogin, data);
   Future<Response> register(Map data) => post(ApiConstants.register, data);
 }

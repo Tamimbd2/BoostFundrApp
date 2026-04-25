@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import '../../../data/providers/auth_provider.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../data/providers/auth_provider.dart' as local;
 
 class LoginController extends GetxController {
-  final AuthProvider _authProvider = Get.find<AuthProvider>();
+  final local.AuthProvider _authProvider = Get.find<local.AuthProvider>();
   final storage = GetStorage();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+
+  final GoogleSignIn _googleSignIn = GoogleSignIn(
+    scopes: ['email', 'profile'],
+  );
 
   final email = ''.obs;
   final password = ''.obs;
@@ -58,14 +65,16 @@ class LoginController extends GetxController {
           colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM,
         );
-        
+
         // Save token and navigate
         final data = response.body['data'];
-        final token = response.body['token'] ?? 
-                      response.body['access_token'] ?? 
-                      (data is Map ? data['token'] : null);
-        
+        final token =
+            response.body['token'] ??
+            response.body['access_token'] ??
+            (data is Map ? data['token'] : null);
+
         if (token != null) {
+          debugPrint('🔑 Login Token: $token');
           storage.write('token', token);
           if (data is Map && data['user'] != null) {
             storage.write('user', data['user']);
@@ -74,8 +83,6 @@ class LoginController extends GetxController {
           }
           Get.offAllNamed('/home');
         } else {
-          // If no token is found, still navigate to home if the response was OK, 
-          // or handle as error if token is mandatory
           Get.offAllNamed('/home');
         }
       } else {
@@ -96,6 +103,75 @@ class LoginController extends GetxController {
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
       );
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> loginWithGoogle() async {
+    try {
+      isLoading.value = true;
+      
+      // Clear previous session for a fresh start
+      await _googleSignIn.signOut();
+      
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser == null) {
+        isLoading.value = false;
+        return; // User cancelled
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      // 🔥 Create Firebase credential
+      final AuthCredential credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken,
+        idToken: googleAuth.idToken,
+      );
+
+      // 🔥 Sign in to Firebase
+      final UserCredential userCredential = 
+          await _auth.signInWithCredential(credential);
+
+      // 🔥 Get the Firebase ID Token (this is what your backend expects)
+      final String? firebaseToken = await userCredential.user?.getIdToken();
+
+      if (firebaseToken == null) {
+        debugPrint('❌ Firebase ID Token is null');
+        Get.snackbar('Error', 'Could not get Firebase ID Token');
+        return;
+      }
+
+      debugPrint('📩 Sending Firebase Token: $firebaseToken');
+
+      final response = await _authProvider.googleLogin({'token': firebaseToken});
+
+      if (response.status.isOk) {
+        final data = response.body['data'];
+        final token =
+            response.body['token'] ??
+            response.body['access_token'] ??
+            (data is Map ? data['token'] : null);
+
+        if (token != null) {
+          debugPrint('🔑 Backend Token: $token');
+          storage.write('token', token);
+          if (data is Map && data['user'] != null) {
+            storage.write('user', data['user']);
+          }
+          Get.offAllNamed('/home');
+        } else {
+          Get.offAllNamed('/home');
+        }
+      } else {
+        String message = response.body?['message'] ?? 'Google Login failed';
+        Get.snackbar('Login Failed', message);
+      }
+    } catch (e) {
+      print('Google Login Error: $e');
+      Get.snackbar('Error', 'Google Sign-In failed');
     } finally {
       isLoading.value = false;
     }

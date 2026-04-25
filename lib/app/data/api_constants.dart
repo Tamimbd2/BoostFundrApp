@@ -1,6 +1,7 @@
 class ApiConstants {
   static const String baseUrl = 'https://boost-funder.onrender.com/api/v1';
   static const String login = '/auth/login';
+  static const String googleLogin = '/auth/google-login';
   static const String register = '/auth/register';
   static const String dealsAll = '/deals/all';
   static const String dealFeed = '/deals/feed';
