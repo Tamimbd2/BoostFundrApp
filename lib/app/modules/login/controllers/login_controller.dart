@@ -69,6 +69,8 @@ class LoginController extends GetxController {
           storage.write('token', token);
           if (data is Map && data['user'] != null) {
             storage.write('user', data['user']);
+            final role = data['user']['role'];
+            print('User logged in with role: $role');
           }
           Get.offAllNamed('/home');
         } else {

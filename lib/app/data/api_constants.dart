@@ -6,4 +6,5 @@ class ApiConstants {
   static const String dealFeed = '/deals/feed';
   static const String dealsFeedList = '/deals/feed'; // New endpoint for home feed
   static const String founderProfile = '/users/me/founder-profile';
+  static const String investorProfile = '/users/me/investor-profile';
 }

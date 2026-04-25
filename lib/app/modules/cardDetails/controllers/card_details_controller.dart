@@ -17,6 +17,7 @@ class CardDetailsController extends GetxController {
   @override
   void onInit() {
     super.onInit();
+    _loadUserPlan();
     fetchDealDetail();
   }
 
@@ -61,6 +62,13 @@ class CardDetailsController extends GetxController {
         final json = jsonDecode(response.body) as Map<String, dynamic>;
         if (json['data'] != null) {
           dealData.value = Map<String, dynamic>.from(json['data']);
+          
+          // Dynamically update access level from API response if provided
+          final apiAccessLevel = json['accessLevel'] ?? json['data']['accessLevel'];
+          if (apiAccessLevel != null) {
+            userPlan.value = apiAccessLevel.toString();
+            debugPrint('[CardDetails] Access level updated from API: ${userPlan.value}');
+          }
         } else {
           hasError.value = true;
           errorMessage.value = 'Data field is null in response';
@@ -173,4 +181,66 @@ class CardDetailsController extends GetxController {
       return 0;
     }
   }
+
+  // ── Access Control ───────────────────────────────────────
+  final userPlan = 'free'.obs;
+
+  String get userAccessLevel => userPlan.value;
+
+  void _loadUserPlan() {
+    final user = _storage.read('user');
+    debugPrint('[CardDetails] User data from storage: $user');
+    userPlan.value = user?['accessLevel'] ?? user?['plan'] ?? 'free';
+  }
+
+  bool isFieldLocked(String fieldName) {
+    // Normalize level for comparison
+    final level = userAccessLevel.toLowerCase();
+    
+    if (level == 'elite') return false;
+
+    final proFields = [
+      'businessModel',
+      'market',
+      'geography',
+      'founderDetails',
+      'team',
+      'traction',
+      'useOfFunds'
+    ];
+    final eliteFields = ['tractionHighlights', 'privateDocuments'];
+
+    if (level == 'pro') {
+      // Pro users only have eliteFields locked
+      return eliteFields.contains(fieldName);
+    }
+    
+    // For free users or any other level, both pro and elite fields are locked
+    return proFields.contains(fieldName) || eliteFields.contains(fieldName);
+  }
+
+  String getTargetLevelForField(String fieldName) {
+    final proFields = [
+      'businessModel',
+      'market',
+      'geography',
+      'founderDetails',
+      'team',
+      'traction',
+      'useOfFunds'
+    ];
+    if (proFields.contains(fieldName)) return 'Pro';
+    return 'Elite';
+  }
+
+  // ── Additional Fields ─────────────────────────────────────
+  String get businessModel => dealData.value?['businessModel'] ?? '—';
+  String get market => dealData.value?['market'] ?? '—';
+  String get geography => dealData.value?['geography'] ?? '—';
+  String get founderDetails => dealData.value?['founderDetails'] ?? '—';
+  String get team => dealData.value?['team'] ?? '—';
+  String get traction => dealData.value?['traction'] ?? '—';
+  String get useOfFunds => dealData.value?['useOfFunds'] ?? '—';
+  List<dynamic> get privateDocuments =>
+      dealData.value?['privateDocuments'] as List? ?? [];
 }

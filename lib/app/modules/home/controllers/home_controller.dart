@@ -2,6 +2,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../data/models/deal_model.dart';
 import '../../../data/providers/deals_provider.dart';
+import '../../../data/api_constants.dart';
 
 class HomeController extends GetxController {
   final DealsProvider _dealsProvider = Get.put(DealsProvider());
@@ -12,6 +13,7 @@ class HomeController extends GetxController {
   final userName = 'Mohammed'.obs;
   final currentUserId = ''.obs;
   final profileImage = ''.obs;
+  final userRole = 'founder'.obs;
 
   @override
   void onInit() {
@@ -26,8 +28,12 @@ class HomeController extends GetxController {
       final token = storage.read('token');
       if (token == null) return;
 
+      final endpoint = userRole.value == 'investor'
+          ? ApiConstants.investorProfile
+          : ApiConstants.founderProfile;
+
       final response = await GetConnect().get(
-        'https://boost-funder.onrender.com/api/v1/users/me/founder-profile',
+        '${ApiConstants.baseUrl}$endpoint',
         headers: {
           'Authorization': 'Bearer $token',
           'content-type': 'application/json',
@@ -52,6 +58,7 @@ class HomeController extends GetxController {
       if (user['firstName'] != null) userName.value = user['firstName'];
       if (user['id'] != null) currentUserId.value = user['id'];
       else if (user['_id'] != null) currentUserId.value = user['_id'];
+      if (user['role'] != null) userRole.value = user['role'];
     }
   }
 

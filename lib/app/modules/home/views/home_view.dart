@@ -23,8 +23,14 @@ class HomeView extends GetView<HomeController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(height: 24),
-                    _buildCreateCampaignButton(),
-                    const SizedBox(height: 32),
+                    Obx(() => controller.userRole.value == 'investor'
+                        ? const SizedBox.shrink()
+                        : Column(
+                            children: [
+                              _buildCreateCampaignButton(),
+                              const SizedBox(height: 32),
+                            ],
+                          )),
                     _buildSectionHeader('Progress Overview'),
                     const SizedBox(height: 16),
                     Obx(() {
@@ -104,12 +110,16 @@ class HomeView extends GetView<HomeController> {
                   ],
                 ),
                 const SizedBox(height: 4),
-                const Text(
-                  'Founder Dashboard',
-                  style: TextStyle(
-                    color: Color(0xFF22C55E),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
+                Obx(
+                  () => Text(
+                    controller.userRole.value == 'investor'
+                        ? 'Investor Dashboard'
+                        : 'Founder Dashboard',
+                    style: const TextStyle(
+                      color: Color(0xFF22C55E),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ),
               ],

@@ -44,6 +44,8 @@ import '../modules/signup/bindings/signup_binding.dart';
 import '../modules/signup/views/signup_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
+import '../modules/subscriptions/bindings/subscriptions_binding.dart';
+import '../modules/subscriptions/views/subscriptions_view.dart';
 
 part 'app_routes.dart';
 
@@ -162,6 +164,11 @@ class AppPages {
       name: _Paths.EDIT_PROFILE,
       page: () => const EditProfileView(),
       binding: EditProfileBinding(),
+    ),
+    GetPage(
+      name: _Paths.SUBSCRIPTIONS,
+      page: () => const SubscriptionsView(),
+      binding: SubscriptionsBinding(),
     ),
   ];
 }

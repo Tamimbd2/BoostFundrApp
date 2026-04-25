@@ -25,6 +25,7 @@ abstract class Routes {
   static const PLATFORM_GUIDLINES = _Paths.PLATFORM_GUIDLINES;
   static const CARD_DETAILS = _Paths.CARD_DETAILS;
   static const EDIT_PROFILE = _Paths.EDIT_PROFILE;
+  static const SUBSCRIPTIONS = _Paths.SUBSCRIPTIONS;
 }
 
 abstract class _Paths {
@@ -51,4 +52,5 @@ abstract class _Paths {
   static const PLATFORM_GUIDLINES = '/platform-guidlines';
   static const CARD_DETAILS = '/card-details';
   static const EDIT_PROFILE = '/edit-profile';
+  static const SUBSCRIPTIONS = '/subscriptions';
 }
