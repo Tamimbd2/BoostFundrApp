@@ -35,17 +35,13 @@ class ProfileView extends GetView<ProfileController> {
                       children: [
                         _buildMenuItem(Icons.campaign_outlined, 'My Deal', onTap: () => Get.toNamed(Routes.MY_CAMPAIGN)),
                         _buildDivider(),
-                        _buildMenuItem(Icons.person_search_outlined, 'Interested Investor', onTap: () => Get.toNamed(Routes.INTERESTED_INVESTOR)),
-                        _buildDivider(),
                         _buildMenuItem(Icons.bookmark_outline, 'Save Deal', onTap: () => Get.toNamed(Routes.SAVE_CAMPAIGN)),
-                        _buildDivider(),
-                        _buildMenuItem(Icons.description_outlined, 'Uploaded Document', onTap: () => Get.toNamed(Routes.UPLOADED_DOCUMENT)),
                         _buildDivider(),
                         _buildMenuItem(Icons.account_balance_wallet_outlined, 'Wallet', onTap: () => Get.toNamed(Routes.WALLET)),
                         _buildDivider(),
                         _buildMenuItem(Icons.account_balance_outlined, 'Bank Details', onTap: () => Get.toNamed(Routes.BANK_DETAILS)),
                         _buildDivider(),
-                        _buildMenuItem(Icons.currency_exchange_outlined, 'Currency', onTap: () => Get.toNamed(Routes.CURRENCY)),
+                        _buildMenuItem(Icons.verified_outlined, 'Verification', onTap: () => Get.toNamed(Routes.VERIFICATIONS)),
                       ],
                     ),
                   ),
@@ -126,13 +122,26 @@ class ProfileView extends GetView<ProfileController> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Obx(() => Text(
-                  controller.userName.value,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
+                Obx(() => Row(
+                  children: [
+                    Text(
+                      controller.userName.value,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    if (controller.isVerified.value)
+                      const Padding(
+                        padding: EdgeInsets.only(left: 6),
+                        child: Icon(
+                          Icons.verified,
+                          color: Color(0xFF22C55E), // Theme green
+                          size: 18,
+                        ),
+                      ),
+                  ],
                 )),
                 const SizedBox(height: 4),
                 Obx(() => Text(

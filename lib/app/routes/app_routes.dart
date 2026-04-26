@@ -26,6 +26,7 @@ abstract class Routes {
   static const CARD_DETAILS = _Paths.CARD_DETAILS;
   static const EDIT_PROFILE = _Paths.EDIT_PROFILE;
   static const SUBSCRIPTIONS = _Paths.SUBSCRIPTIONS;
+  static const VERIFICATIONS = _Paths.VERIFICATIONS;
 }
 
 abstract class _Paths {
@@ -53,4 +54,5 @@ abstract class _Paths {
   static const CARD_DETAILS = '/card-details';
   static const EDIT_PROFILE = '/edit-profile';
   static const SUBSCRIPTIONS = '/subscriptions';
+  static const VERIFICATIONS = '/verifications';
 }

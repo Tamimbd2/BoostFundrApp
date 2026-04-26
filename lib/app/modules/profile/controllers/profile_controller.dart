@@ -4,10 +4,11 @@ import 'package:get_storage/get_storage.dart';
 
 class ProfileController extends GetxController {
   final storage = GetStorage();
-  
+
   final userName = 'Mohammed'.obs;
   final userEmail = 'm@gmail.com'.obs;
   final profileImage = ''.obs;
+  final isVerified = false.obs;
   final isLoading = false.obs;
 
   @override
@@ -35,16 +36,20 @@ class ProfileController extends GetxController {
         final data = response.body['data'];
         if (data != null && data['user'] != null) {
           final user = data['user'];
-          
+
           if (user['firstName'] != null && user['lastName'] != null) {
             userName.value = "${user['firstName']} ${user['lastName']}";
           }
           if (user['email'] != null) {
             userEmail.value = user['email'];
           }
-          
-          if (user['profile'] != null && user['profile']['profileImage'] != null) {
-            profileImage.value = user['profile']['profileImage'];
+
+          isVerified.value = user['isVerified'] ?? false;
+
+          if (user['profile'] != null) {
+            if (user['profile']['profileImage'] != null) {
+              profileImage.value = user['profile']['profileImage'];
+            }
           }
         }
       }
@@ -66,6 +71,7 @@ class ProfileController extends GetxController {
       if (user['email'] != null) {
         userEmail.value = user['email'];
       }
+      isVerified.value = user['isVerified'] ?? false;
     }
   }
 

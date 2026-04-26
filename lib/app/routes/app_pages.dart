@@ -20,6 +20,8 @@ import '../modules/Setting/bindings/setting_binding.dart';
 import '../modules/Setting/views/setting_view.dart';
 import '../modules/UploadedDocument/bindings/uploaded_document_binding.dart';
 import '../modules/UploadedDocument/views/uploaded_document_view.dart';
+import '../modules/Verifications/bindings/verifications_binding.dart';
+import '../modules/Verifications/views/verifications_view.dart';
 import '../modules/Wallet/bindings/wallet_binding.dart';
 import '../modules/Wallet/views/wallet_view.dart';
 import '../modules/cardDetails/bindings/card_details_binding.dart';
@@ -169,6 +171,11 @@ class AppPages {
       name: _Paths.SUBSCRIPTIONS,
       page: () => const SubscriptionsView(),
       binding: SubscriptionsBinding(),
+    ),
+    GetPage(
+      name: _Paths.VERIFICATIONS,
+      page: () => const VerificationsView(),
+      binding: VerificationsBinding(),
     ),
   ];
 }
