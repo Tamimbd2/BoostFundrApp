@@ -4,10 +4,68 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
+import 'package:file_picker/file_picker.dart' as fp;
 import '../../../data/providers/deals_provider.dart';
 
 class CreateCampaignController extends GetxController {
   final DealsProvider _dealsProvider = Get.find<DealsProvider>();
+  final profileCompletionScore = 0.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    final args = Get.arguments;
+    if (args != null && args is String) {
+      dealId = args;
+      _fetchDealData(dealId!);
+    }
+  }
+
+  Future<void> _fetchDealData(String id) async {
+    try {
+      isLoading.value = true;
+      final response = await _dealsProvider.getDealById(id);
+      if (response.status.isOk) {
+        final data = response.body?['data'];
+        if (data != null) {
+          startupNameController.text = data['startupName'] ?? '';
+          taglineController.text = data['tagline'] ?? '';
+          startupWebsiteController.text = data['startupWebsite'] ?? '';
+          locationController.text = data['location'] ?? '';
+          category.value = data['category'] ?? 'AI';
+          stage.value = data['stage'] ?? 'idea';
+          
+          shortPitchController.text = data['shortPitch'] ?? '';
+          problemController.text = data['problem'] ?? '';
+          solutionController.text = data['solution'] ?? '';
+          businessModelController.text = data['businessModel'] ?? '';
+          targetMarketController.text = data['targetMarket'] ?? '';
+          whyNowController.text = data['whyNow'] ?? '';
+          
+          goalAmountController.text = (data['goalAmount'] ?? '').toString();
+          currencyController.text = data['currency'] ?? 'AED';
+          deadlineController.text = data['deadline'] ?? '';
+          revenueController.text = (data['revenue'] ?? '').toString();
+          
+          tractionController.text = data['traction'] ?? '';
+          goToMarketController.text = data['goToMarket'] ?? '';
+          topCompetitorController.text = data['topCompetitor'] ?? '';
+          advantageController.text = data['advantage'] ?? '';
+          
+          founderContactController.text = data['founderContact'] ?? '';
+          faqController.text = (data['faq'] is List && (data['faq'] as List).isNotEmpty) 
+              ? data['faq'][0] 
+              : '';
+
+          profileCompletionScore.value = (data['profileCompletionScore'] ?? 0).toInt();
+        }
+      }
+    } catch (e) {
+      debugPrint('Error fetching deal data: $e');
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   final startupNameController = TextEditingController();
   final shortPitchController = TextEditingController();
@@ -20,8 +78,6 @@ class CreateCampaignController extends GetxController {
   final currencyController = TextEditingController();
   final deadlineController = TextEditingController();
   final raisedAmountController = TextEditingController();
-  
-  // Missing schema fields
   final locationController = TextEditingController();
   final taglineController = TextEditingController();
   final problemController = TextEditingController();
@@ -34,17 +90,72 @@ class CreateCampaignController extends GetxController {
   final geographyController = TextEditingController();
   final useOfFundsController = TextEditingController();
   final faqController = TextEditingController();
+  final startupWebsiteController = TextEditingController();
+  final targetMarketController = TextEditingController();
+  final whyNowController = TextEditingController();
+  final revenueController = TextEditingController();
+  final goToMarketController = TextEditingController();
+  final topCompetitorController = TextEditingController();
+  final advantageController = TextEditingController();
+  
+  // Document Files
+  final pitchDeckFile = Rxn<XFile>();
+  final safeAgreementFile = Rxn<XFile>();
+  final termSheetFile = Rxn<XFile>();
+  final registrationCertificateFile = Rxn<XFile>();
+  final tradeLicenseFile = Rxn<XFile>();
+  final balanceSheetFile = Rxn<XFile>();
+  final revenueProofFile = Rxn<XFile>();
+  final capTableFile = Rxn<XFile>();
+  final shareholderAgreementFile = Rxn<XFile>();
+
+  String? dealId;
+
+  bool _isPicking = false;
+
+  Future<void> pickDocument(Rxn<XFile> target) async {
+    if (_isPicking) return;
+    try {
+      _isPicking = true;
+      fp.FilePickerResult? result = await fp.FilePicker.pickFiles(
+        type: fp.FileType.custom,
+        allowedExtensions: ['pdf'],
+      );
+      
+      if (result != null && result.files.single.path != null) {
+        target.value = XFile(result.files.single.path!);
+      }
+    } catch (e) {
+      debugPrint('Error picking PDF: $e');
+      Get.snackbar('Error', 'Could not open file manager: $e', 
+          backgroundColor: Colors.redAccent.withOpacity(0.1), colorText: Colors.white);
+    } finally {
+      _isPicking = false;
+    }
+  }
 
   final category = 'AI'.obs;
-  final stage = 'MVP'.obs;
+  final stage = 'idea'.obs;
   
   final tractionHighlights = <String>[].obs;
   final selectedImages = <XFile>[].obs;
   final _picker = ImagePicker();
 
+  final currentStep = 1.obs;
   final isLoading = false.obs;
 
-  final categories = ['AI', 'HealthTech', 'FinTech', 'E-commerce', 'SaaS', 'Other'];
+  final categories = [
+    'AI',
+    'HealthTech',
+    'FinTech',
+    'E-commerce',
+    'SaaS',
+    'Enterprise AI & Data Analytics',
+    'Web3',
+    'CleanTech',
+    'EdTech',
+    'Other'
+  ];
   final stages = ['idea', 'MVP', 'growth', 'scale'];
 
   Future<void> chooseDate() async {
@@ -74,9 +185,17 @@ class CreateCampaignController extends GetxController {
   }
 
   Future<void> pickImages() async {
-    final List<XFile> images = await _picker.pickMultiImage();
-    if (images.isNotEmpty) {
-      selectedImages.addAll(images);
+    if (_isPicking) return;
+    try {
+      _isPicking = true;
+      final List<XFile> images = await _picker.pickMultiImage();
+      if (images.isNotEmpty) {
+        selectedImages.addAll(images);
+      }
+    } catch (e) {
+      debugPrint('Error picking images: $e');
+    } finally {
+      _isPicking = false;
     }
   }
 
@@ -84,81 +203,159 @@ class CreateCampaignController extends GetxController {
     selectedImages.removeAt(index);
   }
 
-  Future<void> submit() async {
-    if (selectedImages.isEmpty) {
-      Get.snackbar(
-        'Error',
-        'Please upload at least one image',
-        backgroundColor: Colors.redAccent.withOpacity(0.1),
-        colorText: Colors.white,
-      );
-      return;
-    }
-
+  Future<void> submit({bool navigateBack = false}) async {
     try {
       isLoading.value = true;
 
-      List<MultipartFile> imageFiles = [];
-      for (var file in selectedImages) {
-        final mimeType = lookupMimeType(file.path);
-        imageFiles.add(MultipartFile(
-          file.path, 
-          filename: file.name,
-          contentType: mimeType != null ? mimeType : 'image/jpeg',
-        ));
-      }
-      
-      final formData = FormData({
-        'startupName': startupNameController.text,
-        'shortPitch': shortPitchController.text,
-        'category': category.value,
-        'stage': stage.value,
-        'goalAmount': int.tryParse(goalAmountController.text) ?? 0,
-        'raisedAmount': int.tryParse(raisedAmountController.text) ?? 0,
-        'currency': currencyController.text,
-        'deadline': deadlineController.text,
-        'location': locationController.text,
-        'tagline': taglineController.text,
-        'problem': problemController.text,
-        'solution': solutionController.text,
-        'businessModel': businessModelController.text,
-        'market': marketController.text,
-        'traction': tractionController.text,
-        'founderDetails': founderDetailsController.text,
-        'team': teamController.text,
-        'geography': geographyController.text,
-        'useOfFunds': useOfFundsController.text,
-        'founderContact': founderContactController.text,
-        'pitchDeck': pitchDeckController.text,
-        'financialDetails': financialDetailsController.text,
-        'detailedTractionData': detailedTractionDataController.text,
-        'privateDocuments': privateDocumentsController.text,
-        'faq': faqController.text.isNotEmpty ? [faqController.text] : [],
-        'media': imageFiles,
-      });
+      if (currentStep.value == 1 && dealId == null) {
+        // Step 1: Create the deal (POST)
+        final formData = FormData({
+          'startupName': startupNameController.text,
+          'startupWebsite': startupWebsiteController.text,
+          'tagline': taglineController.text,
+          'category': category.value,
+          'stage': stage.value,
+          'location': locationController.text,
+        });
 
-      final response = await _dealsProvider.createDeal(formData);
+        if (selectedImages.isNotEmpty) {
+          final file = selectedImages[0];
+          final mimeType = lookupMimeType(file.path);
+          formData.files.add(MapEntry(
+            'startupLogo',
+            MultipartFile(
+              file.path,
+              filename: file.name,
+              contentType: mimeType ?? 'image/jpeg',
+            ),
+          ));
+        }
 
-      if (response.status.isOk) {
-        _showSuccessDialog();
-      } else {
-        Get.snackbar(
-          'Error',
-          response.body?['message'] ?? 'Failed to create campaign',
-          backgroundColor: Colors.redAccent.withOpacity(0.1),
-          colorText: Colors.white,
-        );
+        final response = await _dealsProvider.createDeal(formData);
+        if (response.status.isOk) {
+          dealId = response.body?['data']?['_id'] ?? response.body?['data']?['id'];
+          _handleSuccess(response, navigateBack);
+        } else {
+          _handleError(response);
+        }
+      } else if (dealId != null) {
+        // Step 2-5: Update the deal (PATCH)
+        dynamic updateData;
+        
+        if (currentStep.value == 1) {
+          updateData = {
+            'startupName': startupNameController.text,
+            'startupWebsite': startupWebsiteController.text,
+            'tagline': taglineController.text,
+            'category': category.value,
+            'stage': stage.value,
+            'location': locationController.text,
+          };
+        } else if (currentStep.value == 2) {
+          updateData = {
+            'shortPitch': shortPitchController.text,
+            'problem': problemController.text,
+            'solution': solutionController.text,
+            'businessModel': businessModelController.text,
+            'targetMarket': targetMarketController.text,
+            'whyNow': whyNowController.text,
+          };
+        } else if (currentStep.value == 3) {
+          updateData = {
+            'goalAmount': int.tryParse(goalAmountController.text) ?? 0,
+            'currency': currencyController.text,
+            'deadline': deadlineController.text,
+            'revenue': int.tryParse(revenueController.text) ?? 0,
+            'useOfFunds': [
+              {'category': 'General', 'percentage': 100} // Simplified for now
+            ],
+          };
+        } else if (currentStep.value == 4) {
+          updateData = {
+            'traction': tractionController.text,
+            'goToMarket': goToMarketController.text,
+            'topCompetitor': topCompetitorController.text,
+            'advantage': advantageController.text,
+            'team': [
+              {'name': teamController.text, 'role': 'Founder'} // Simplified
+            ],
+          };
+        } else if (currentStep.value == 5) {
+          // Use FormData for files in PATCH
+          final fd = FormData({
+            'faq': faqController.text.isNotEmpty ? [faqController.text] : [],
+            'founderContact': founderContactController.text,
+          });
+
+          void addFile(String key, XFile? file) {
+            if (file != null) {
+              final mimeType = lookupMimeType(file.path);
+              fd.files.add(MapEntry(
+                key,
+                MultipartFile(
+                  file.path,
+                  filename: file.name,
+                  contentType: mimeType ?? 'application/pdf',
+                ),
+              ));
+            }
+          }
+
+          addFile('pitchDeck', pitchDeckFile.value);
+          addFile('safeAgreement', safeAgreementFile.value);
+          addFile('termSheet', termSheetFile.value);
+          addFile('registrationCertificate', registrationCertificateFile.value);
+          addFile('tradeLicense', tradeLicenseFile.value);
+          addFile('balanceSheet', balanceSheetFile.value);
+          addFile('revenueProof', revenueProofFile.value);
+          addFile('capTable', capTableFile.value);
+          addFile('shareholderAgreement', shareholderAgreementFile.value);
+
+          updateData = fd;
+        }
+
+        final response = await _dealsProvider.updateDeal(dealId!, updateData);
+        if (response.status.isOk) {
+          _handleSuccess(response, navigateBack);
+        } else {
+          _handleError(response);
+        }
       }
     } catch (e) {
-      Get.snackbar(
-        'Error',
-        'An unexpected error occurred',
-        backgroundColor: Colors.redAccent.withOpacity(0.1),
-        colorText: Colors.white,
-      );
+      Get.snackbar('Error', 'An unexpected error occurred',
+          backgroundColor: Colors.redAccent.withOpacity(0.1), colorText: Colors.white);
     } finally {
       isLoading.value = false;
     }
+  }
+
+  void _handleSuccess(Response response, bool navigateBack) {
+    // Extract profile completion score if available
+    final score = response.body?['data']?['profileCompletionScore'];
+    if (score != null) {
+      profileCompletionScore.value = (score as num).toInt();
+    }
+
+    if (navigateBack) {
+      _showSuccessDialog();
+    } else {
+      Get.snackbar(
+        'Success',
+        'Progress saved',
+        backgroundColor: const Color(0xFF22C55E).withOpacity(0.1),
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
+
+  void _handleError(Response response) {
+    Get.snackbar(
+      'Error',
+      response.body?['message'] ?? 'Action failed',
+      backgroundColor: Colors.redAccent.withOpacity(0.1),
+      colorText: Colors.white,
+    );
   }
 
   void _showSuccessDialog() {
@@ -215,6 +412,13 @@ class CreateCampaignController extends GetxController {
     goalAmountController.dispose();
     currencyController.dispose();
     deadlineController.dispose();
+    startupWebsiteController.dispose();
+    targetMarketController.dispose();
+    whyNowController.dispose();
+    revenueController.dispose();
+    goToMarketController.dispose();
+    topCompetitorController.dispose();
+    advantageController.dispose();
     super.onClose();
   }
 }

@@ -19,6 +19,7 @@ class LoginController extends GetxController {
   final password = ''.obs;
   final isPasswordVisible = false.obs;
   final isLoading = false.obs;
+  final selectedRole = 'investor'.obs;
 
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
@@ -109,7 +110,7 @@ class LoginController extends GetxController {
     }
   }
 
-  Future<void> loginWithGoogle() async {
+  Future<void> loginWithGoogle(String role) async {
     try {
       isLoading.value = true;
       
@@ -147,7 +148,10 @@ class LoginController extends GetxController {
 
       debugPrint('📩 Sending Firebase Token: $firebaseToken');
 
-      final response = await _authProvider.googleLogin({'token': firebaseToken});
+      final response = await _authProvider.googleLogin({
+        'token': firebaseToken,
+        'role': role,
+      });
 
       if (response.status.isOk) {
         final data = response.body['data'];

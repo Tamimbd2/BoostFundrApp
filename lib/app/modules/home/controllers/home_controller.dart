@@ -7,7 +7,7 @@ import '../../../data/api_constants.dart';
 class HomeController extends GetxController {
   final DealsProvider _dealsProvider = Get.put(DealsProvider());
   final storage = GetStorage();
-  
+
   final deals = <DealModel>[].obs;
   final isLoading = true.obs;
   final userName = 'Mohammed'.obs;
@@ -44,7 +44,8 @@ class HomeController extends GetxController {
         final data = response.body['data'];
         if (data != null && data['user'] != null) {
           final user = data['user'];
-          if (user['profile'] != null && user['profile']['profileImage'] != null) {
+          if (user['profile'] != null &&
+              user['profile']['profileImage'] != null) {
             profileImage.value = user['profile']['profileImage'];
           }
         }
@@ -56,8 +57,10 @@ class HomeController extends GetxController {
     final user = storage.read('user');
     if (user != null) {
       if (user['firstName'] != null) userName.value = user['firstName'];
-      if (user['id'] != null) currentUserId.value = user['id'];
-      else if (user['_id'] != null) currentUserId.value = user['_id'];
+      if (user['id'] != null)
+        currentUserId.value = user['id'];
+      else if (user['_id'] != null)
+        currentUserId.value = user['_id'];
       if (user['role'] != null) userRole.value = user['role'];
     }
   }
@@ -66,11 +69,11 @@ class HomeController extends GetxController {
     try {
       isLoading.value = true;
       final response = await _dealsProvider.getDealsFeed();
-      
+
       if (response.status.isOk && response.body != null) {
         final dynamic data = response.body['data'];
         List<dynamic> items = [];
-        
+
         if (data is List) {
           items = data;
         } else if (data != null && data['items'] != null) {

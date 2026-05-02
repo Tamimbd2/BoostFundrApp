@@ -54,5 +54,26 @@ class DealsProvider extends GetConnect {
       },
     );
   }
-}
 
+  Future<Response> updateDeal(String id, dynamic data) async {
+    final token = storage.read('token');
+    return patch(
+      '/deals/$id',
+      data,
+      headers: {
+        if (token != null) 'Authorization': 'Bearer $token',
+      },
+    );
+  }
+
+  Future<Response> getMyDeals() async {
+    final token = storage.read('token');
+    return get(
+      ApiConstants.myDeals,
+      headers: {
+        if (token != null) 'Authorization': 'Bearer $token',
+        'content-type': 'application/json',
+      },
+    );
+  }
+}

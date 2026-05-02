@@ -197,6 +197,12 @@ class CardDetailsController extends GetxController {
     // Normalize level for comparison
     final level = userAccessLevel.toLowerCase();
     
+    // 🔥 Founder always has full access to their deals
+    final user = _storage.read('user');
+    if (user != null && user['role'] == 'founder') {
+      return false;
+    }
+    
     if (level == 'elite') return false;
 
     final proFields = [

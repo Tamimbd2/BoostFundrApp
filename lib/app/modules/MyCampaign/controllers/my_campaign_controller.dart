@@ -3,7 +3,10 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import '../../../data/models/deal_model.dart';
 
+import '../../../data/providers/deals_provider.dart';
+
 class MyCampaignController extends GetxController {
+  final DealsProvider _dealsProvider = Get.find<DealsProvider>();
   final storage = GetStorage();
   final deals = <DealModel>[].obs;
   final isLoading = true.obs;
@@ -28,18 +31,13 @@ class MyCampaignController extends GetxController {
         return;
       }
 
-      final response = await GetConnect().get(
-        'https://boost-funder.onrender.com/api/v1/deals/founder/me',
-        headers: {
-          'Authorization': 'Bearer $token',
-          'content-type': 'application/json',
-        },
-      );
-
+      final response = await _dealsProvider.getMyDeals();
+      
       if (response.status.isOk && response.body != null) {
         final data = response.body['data'];
-        if (data != null && data['items'] != null) {
-          final List<dynamic> dealsJson = data['items'];
+        if (data != null) {
+          // Check if data is a list directly or has items
+          final List<dynamic> dealsJson = (data is List) ? data : (data['items'] ?? []);
           deals.assignAll(dealsJson.map((json) => DealModel.fromJson(json)).toList());
         }
       } else {

@@ -179,7 +179,51 @@ class MyCampaignView extends GetView<MyCampaignController> {
                         ),
                       ),
                       const SizedBox(width: 8),
-                      const Icon(Icons.more_horiz, color: Colors.white54, size: 20),
+                      PopupMenuButton<String>(
+                        padding: EdgeInsets.zero,
+                        icon: const Icon(Icons.more_horiz, color: Colors.white54, size: 20),
+                        color: const Color(0xFF1C1C1E),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        onSelected: (value) {
+                          if (value == 'edit') {
+                            Get.toNamed(Routes.CREATE_CAMPAIGN, arguments: deal.id);
+                          }
+                        },
+                        itemBuilder: (context) => [
+                          PopupMenuItem(
+                            value: 'edit',
+                            child: Row(
+                              children: [
+                                const Icon(Icons.edit_outlined, color: Colors.white, size: 18),
+                                const SizedBox(width: 12),
+                                Text(
+                                  'Edit Deal',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.9),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          PopupMenuItem(
+                            value: 'delete',
+                            child: Row(
+                              children: [
+                                const Icon(Icons.delete_outline, color: Colors.redAccent, size: 18),
+                                const SizedBox(width: 12),
+                                Text(
+                                  'Delete',
+                                  style: TextStyle(
+                                    color: Colors.redAccent.withOpacity(0.9),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                   const SizedBox(height: 2),

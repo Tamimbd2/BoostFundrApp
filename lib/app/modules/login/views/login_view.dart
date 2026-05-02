@@ -159,7 +159,7 @@ class LoginView extends GetView<LoginController> {
                       _SocialButton(
                         icon: Icons.g_mobiledata,
                         label: 'Google',
-                        onTap: controller.loginWithGoogle,
+                        onTap: () => _showRoleSelectionDialog(context),
                       ),
                       const SizedBox(width: 12),
                       _SocialButton(
@@ -251,6 +251,133 @@ class LoginView extends GetView<LoginController> {
           ),
         ),
       ],
+    );
+  }
+  void _showRoleSelectionDialog(BuildContext context) {
+    Get.dialog(
+      Dialog(
+        backgroundColor: const Color(0xFF111111),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text(
+                    "Select Your Role",
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  IconButton(
+                    onPressed: () => Get.back(),
+                    icon: const Icon(Icons.close, color: Colors.white, size: 20),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                "Please choose a role to continue with Google.",
+                style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14),
+              ),
+              const SizedBox(height: 24),
+              Row(
+                children: [
+                  Expanded(
+                    child: Obx(() => _buildRoleCard(
+                          title: "Investor",
+                          icon: Icons.person_outline,
+                          isSelected: controller.selectedRole.value == 'investor',
+                          onTap: () => controller.selectedRole.value = 'investor',
+                        )),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Obx(() => _buildRoleCard(
+                          title: "Founder",
+                          icon: Icons.rocket_launch_outlined,
+                          isSelected: controller.selectedRole.value == 'founder',
+                          onTap: () => controller.selectedRole.value = 'founder',
+                        )),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Get.back();
+                    controller.loginWithGoogle(controller.selectedRole.value);
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF22C55E),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 0,
+                  ),
+                  child: const Text(
+                    "Continue",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRoleCard({
+    required String title,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 24),
+        decoration: BoxDecoration(
+          color: const Color(0xFF1A1A1A),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF22C55E) : const Color(0xFF2A2A2A),
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              color: isSelected ? const Color(0xFF22C55E) : Colors.white,
+              size: 32,
+            ),
+            const SizedBox(height: 12),
+            Text(
+              title,
+              style: TextStyle(
+                color: isSelected ? const Color(0xFF22C55E) : Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 15,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

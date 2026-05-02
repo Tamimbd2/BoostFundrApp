@@ -11,4 +11,5 @@ class ApiConstants {
   static const String investorProfile = '/users/me/investor-profile';
   static const String verificationStatus = '/users/verifications/founder/status';
   static const String submitVerification = '/users/verifications/founder';
+  static const String myDeals = '/deals/founder/me';
 }
