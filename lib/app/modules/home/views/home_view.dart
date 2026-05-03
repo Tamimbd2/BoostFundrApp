@@ -106,6 +106,12 @@ class HomeView extends GetView<HomeController> {
                       ),
                     ),
                     const SizedBox(width: 4),
+                    Obx(() => controller.isVerified.value
+                      ? const Padding(
+                          padding: EdgeInsets.only(right: 4),
+                          child: Icon(Icons.verified, color: Color(0xFF22C55E), size: 18),
+                        )
+                      : const SizedBox.shrink()),
                     const Text('👋', style: TextStyle(fontSize: 18)),
                   ],
                 ),
@@ -261,12 +267,26 @@ class HomeView extends GetView<HomeController> {
       (m) => '${m[1]},',
     );
 
-    final daysLeft = 12 + ((deal.id ?? '').hashCode.abs() % 10);
+    int daysLeft = 0;
+    if (deal.deadline != null) {
+      final deadlineDate = DateTime.tryParse(deal.deadline!);
+      if (deadlineDate != null) {
+        daysLeft = deadlineDate.difference(DateTime.now()).inDays;
+      }
+    }
+    if (daysLeft <= 0 && deal.deadline != null) {
+      // Fallback or show 0
+      daysLeft = 0;
+    } else if (deal.deadline == null) {
+      // Dummy if no deadline
+      daysLeft = 12 + ((deal.id ?? '').hashCode.abs() % 10);
+    }
+
     final Color timeColor = daysLeft <= 12
-        ? const Color(0xFFFFB020) // Yellow for 12 days
-        : daysLeft > 15
-        ? const Color(0xFFFF5252) // Red for 18 days
-        : const Color(0xFF00FF55); // Green otherwise
+        ? const Color(0xFFFFB020) // Yellow for <= 12 days
+        : daysLeft > 30
+        ? const Color(0xFF00FF55) // Green for > 30 days
+        : const Color(0xFFFF5252); // Red otherwise
 
     return GestureDetector(
       onTap: () => Get.toNamed(Routes.CARD_DETAILS, arguments: deal.id),

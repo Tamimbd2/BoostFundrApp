@@ -22,7 +22,7 @@ class VerificationsView extends GetView<VerificationsController> {
                 );
               }
               
-              if (controller.overallStatus.value == 'Verified') {
+              if (controller.isVerified.value) {
                 return _buildVerifiedFullScreen();
               }
 

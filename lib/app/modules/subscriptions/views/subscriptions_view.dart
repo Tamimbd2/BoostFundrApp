@@ -7,7 +7,7 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
 
   @override
   Widget build(BuildContext context) {
-    const neonGreen = Color(0xFF00FF88);
+    const neonGreen = Color(0xFF22C55E);
     const darkBg = Color(0xFF050505);
     const cardColor = Color(0xFF111827);
 
@@ -21,124 +21,129 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
           onPressed: () => Get.back(),
         ),
       ),
-      body: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        padding: const EdgeInsets.symmetric(horizontal: 24),
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            const Text(
-              'Choose Your Plan',
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'Unlock exclusive startup deals and investment\nopportunities',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.5),
-                fontSize: 14,
-                height: 1.5,
-              ),
-            ),
-            const SizedBox(height: 40),
-            
-            // FREE PLAN
-            _buildPlanCard(
-              title: 'Free',
-              subtitle: 'Perfect for exploring deals',
-              price: '0',
-              period: '/forever',
-              icon: Icons.star_border,
-              iconBg: Colors.white.withOpacity(0.05),
-              iconColor: neonGreen,
-              features: [
-                'Browse 50+ startup deals',
-                'Basic deal information',
-                'Save up to 5 deals',
-                'Community access',
-                'Email notifications',
-              ],
-              buttonText: 'Get Started',
-              isPopular: false,
-              neonGreen: neonGreen,
-              cardColor: cardColor,
-            ),
-            
-            const SizedBox(height: 24),
+      body: Obx(() {
+        if (controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(color: neonGreen),
+          );
+        }
 
-            // PRO PLAN
-            _buildPlanCard(
-              title: 'Pro',
-              subtitle: 'Most popular for investors',
-              price: '49',
-              period: '/month',
-              icon: Icons.bolt,
-              iconBg: neonGreen,
-              iconColor: Colors.black,
-              features: [
-                'Unlimited deal browsing',
-                'Full deal details access',
-                'Unlimited saved deals',
-                'Priority support',
-                'Advanced analytics',
-                'Direct founder messaging',
-                'Early deal access',
-                'Investment tracking',
+        if (controller.plans.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(Icons.subscriptions_outlined, color: Colors.white.withOpacity(0.2), size: 64),
+                const SizedBox(height: 16),
+                Text('No subscription plans available', style: TextStyle(color: Colors.white.withOpacity(0.5))),
+                const SizedBox(height: 24),
+                ElevatedButton(
+                  onPressed: () => controller.fetchPlans(),
+                  style: ElevatedButton.styleFrom(backgroundColor: neonGreen.withOpacity(0.1), foregroundColor: neonGreen),
+                  child: const Text('Retry'),
+                ),
               ],
-              buttonText: 'Upgrade Now',
-              isPopular: true,
-              neonGreen: neonGreen,
-              cardColor: cardColor,
             ),
-            
-            const SizedBox(height: 24),
+          );
+        }
 
-            // ELITE PLAN
-            _buildPlanCard(
-              title: 'Elite',
-              subtitle: 'For serious investors',
-              price: '199',
-              period: '/month',
-              icon: Icons.workspace_premium_outlined,
-              iconBg: Colors.white.withOpacity(0.05),
-              iconColor: const Color(0xFFFBBF24),
-              features: [
-                'Everything in Pro',
-                'Exclusive deal flow',
-                'Dedicated account manager',
-                'Custom due diligence reports',
-                'Portfolio management tools',
-                'API access',
-                'White-glove onboarding',
-                'Quarterly strategy calls',
-              ],
-              buttonText: 'Upgrade Now',
-              isPopular: false,
-              neonGreen: neonGreen,
-              cardColor: cardColor,
-            ),
-
-            const SizedBox(height: 32),
-            Text(
-              'All plans include secure payments and can be cancelled anytime',
-              style: TextStyle(
-                color: Colors.white.withOpacity(0.3),
-                fontSize: 12,
+        return SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+              const Text(
+                'Choose Your Plan',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
-            ),
-            const SizedBox(height: 40),
-          ],
-        ),
-      ),
+              const SizedBox(height: 12),
+              Text(
+                'Unlock exclusive startup deals and investment\nopportunities',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.5),
+                  fontSize: 14,
+                  height: 1.5,
+                ),
+              ),
+              const SizedBox(height: 40),
+              
+              ...controller.plans.map((plan) {
+                final isPro = plan.name.toLowerCase() == 'pro';
+                final isElite = plan.name.toLowerCase() == 'elite';
+                final isFree = plan.name.toLowerCase() == 'free';
+
+                IconData icon;
+                Color iconColor;
+                Color iconBg;
+                String subtitle;
+                String buttonText;
+
+                if (isFree) {
+                  icon = Icons.star_border;
+                  iconColor = neonGreen;
+                  iconBg = Colors.white.withOpacity(0.05);
+                  subtitle = 'Perfect for exploring deals';
+                  buttonText = 'Get Started';
+                } else if (isPro) {
+                  icon = Icons.bolt;
+                  iconColor = Colors.black;
+                  iconBg = neonGreen;
+                  subtitle = 'Most popular for investors';
+                  buttonText = 'Upgrade Now';
+                } else {
+                  icon = Icons.workspace_premium_outlined;
+                  iconColor = const Color(0xFFFBBF24);
+                  iconBg = Colors.white.withOpacity(0.05);
+                  subtitle = isElite ? 'For serious investors' : 'Exclusive access';
+                  buttonText = 'Upgrade Now';
+                }
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 24),
+                  child: _buildPlanCard(
+                    planId: plan.id,
+                    onSubscribe: () => controller.subscribe(plan),
+                    title: plan.name.capitalizeFirst ?? plan.name,
+                    subtitle: subtitle,
+                    price: plan.price.toInt().toString(),
+                    period: plan.price == 0 ? '/forever' : '/month',
+                    icon: icon,
+                    iconBg: iconBg,
+                    iconColor: iconColor,
+                    features: plan.features,
+                    buttonText: buttonText,
+                    isPopular: isPro,
+                    neonGreen: neonGreen,
+                    cardColor: cardColor,
+                  ),
+                );
+              }).toList(),
+
+              const SizedBox(height: 8),
+              Text(
+                'All plans include secure payments and can be cancelled anytime',
+                style: TextStyle(
+                  color: Colors.white.withOpacity(0.3),
+                  fontSize: 12,
+                ),
+              ),
+              const SizedBox(height: 40),
+            ],
+          ),
+        );
+      }),
     );
   }
 
   Widget _buildPlanCard({
+    required String planId,
+    required VoidCallback onSubscribe,
     required String title,
     required String subtitle,
     required String price,
@@ -261,9 +266,7 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
                 width: double.infinity,
                 height: 54,
                 child: ElevatedButton(
-                  onPressed: () {
-                    // Logic to handle subscription
-                  },
+                  onPressed: onSubscribe,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: isPopular ? neonGreen : Colors.white.withOpacity(0.05),
                     foregroundColor: isPopular ? Colors.black : Colors.white,

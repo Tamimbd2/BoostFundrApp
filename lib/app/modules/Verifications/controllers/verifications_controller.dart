@@ -17,6 +17,7 @@ class VerificationsController extends GetxController {
   final businessStatus = 'Not Started'.obs;
   final addressStatus = 'Not Started'.obs;
   final overallStatus = 'Not Started'.obs;
+  final isVerified = false.obs;
 
   // Selected files
   final nidFront = Rxn<XFile>();
@@ -42,10 +43,13 @@ class VerificationsController extends GetxController {
           overallStatus.value = status;
           identityStatus.value = status;
           businessStatus.value = status;
+          isVerified.value = status == 'Verified';
         } else if (data != null) {
           identityStatus.value = _mapStatus(data['identityStatus']);
           businessStatus.value = _mapStatus(data['businessStatus']);
-          overallStatus.value = _mapStatus(data['overallStatus'] ?? data['status']);
+          final status = _mapStatus(data['overallStatus'] ?? data['status']);
+          overallStatus.value = status;
+          isVerified.value = status == 'Verified' || data['isVerified'] == true;
         }
       }
     } catch (e) {

@@ -39,6 +39,7 @@ class EditProfileController extends GetxController {
   final isLoading = false.obs;
   final isInitialLoading = true.obs;
   final _picker = ImagePicker();
+  bool _isPickerActive = false;
 
   @override
   void onInit() {
@@ -97,9 +98,18 @@ class EditProfileController extends GetxController {
   }
 
   Future<void> pickImage() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null) {
-      selectedImagePath.value = image.path;
+    if (_isPickerActive) return;
+    
+    try {
+      _isPickerActive = true;
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        selectedImagePath.value = image.path;
+      }
+    } catch (e) {
+      debugPrint('Error picking image: $e');
+    } finally {
+      _isPickerActive = false;
     }
   }
 

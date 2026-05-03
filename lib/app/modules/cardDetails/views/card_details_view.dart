@@ -9,7 +9,7 @@ class CardDetailsView extends GetView<CardDetailsController> {
 
   @override
   Widget build(BuildContext context) {
-    const neonGreen = Color(0xFF00FF88);
+    const neonGreen = Color(0xFF22C55E);
     return Scaffold(
       backgroundColor: Colors.black,
       body: Obx(() {
@@ -438,7 +438,7 @@ class CardDetailsView extends GetView<CardDetailsController> {
                   const SizedBox(height: 12),
                   ElevatedButton(
                     onPressed: () => Get.toNamed(Routes.SUBSCRIPTIONS),
-                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF00FF88), foregroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
+                    style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF22C55E), foregroundColor: Colors.black, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20))),
                     child: const Text('Upgrade Now'),
                   ),
                 ],

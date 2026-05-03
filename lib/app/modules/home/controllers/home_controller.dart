@@ -14,6 +14,7 @@ class HomeController extends GetxController {
   final currentUserId = ''.obs;
   final profileImage = ''.obs;
   final userRole = 'founder'.obs;
+  final isVerified = false.obs;
 
   @override
   void onInit() {
@@ -44,6 +45,7 @@ class HomeController extends GetxController {
         final data = response.body['data'];
         if (data != null && data['user'] != null) {
           final user = data['user'];
+          isVerified.value = user['isVerified'] ?? false;
           if (user['profile'] != null &&
               user['profile']['profileImage'] != null) {
             profileImage.value = user['profile']['profileImage'];
@@ -52,7 +54,7 @@ class HomeController extends GetxController {
       }
     } catch (_) {}
   }
-
+ 
   void _loadUser() {
     final user = storage.read('user');
     if (user != null) {
@@ -62,6 +64,7 @@ class HomeController extends GetxController {
       else if (user['_id'] != null)
         currentUserId.value = user['_id'];
       if (user['role'] != null) userRole.value = user['role'];
+      isVerified.value = user['isVerified'] ?? false;
     }
   }
 

@@ -89,19 +89,55 @@ class CardDetailsController extends GetxController {
   }
 
   // ── Field helpers ─────────────────────────────────────────
-  String get startupName => dealData.value?['startupName'] ?? '—';
+  String get startupName {
+    final data = dealData.value;
+    if (data == null) return '—';
+    return data['basicInfo']?['startupName'] ?? data['startupName'] ?? '—';
+  }
+
   String get shortPitch => dealData.value?['shortPitch'] ?? '—';
-  String get category => dealData.value?['category'] ?? '—';
-  String get stage => dealData.value?['stage'] ?? '—';
+
+  String get category {
+    final data = dealData.value;
+    if (data == null) return '—';
+    return data['basicInfo']?['category'] ?? data['category'] ?? '—';
+  }
+
+  String get stage {
+    final data = dealData.value;
+    if (data == null) return '—';
+    return data['basicInfo']?['stage'] ?? data['stage'] ?? '—';
+  }
+
   String get status => dealData.value?['status'] ?? '—';
-  String get location => dealData.value?['location'] ?? '—';
-  String get problem => dealData.value?['problem'] ?? '—';
-  String get solution => dealData.value?['solution'] ?? '—';
+
+  String get location {
+    final data = dealData.value;
+    if (data == null) return '—';
+    return data['basicInfo']?['location'] ?? data['location'] ?? '—';
+  }
+
+  String get problem {
+    final data = dealData.value;
+    if (data == null) return '—';
+    return data['story']?['problem'] ?? data['problem'] ?? '—';
+  }
+
+  String get solution {
+    final data = dealData.value;
+    if (data == null) return '—';
+    return data['story']?['solution'] ?? data['solution'] ?? '—';
+  }
+
   String get tagline => dealData.value?['tagline'] ?? '—';
   String get currency => dealData.value?['currency'] ?? 'AED';
+
   int get goalAmount {
     final data = dealData.value;
     if (data == null) return 0;
+    if (data['funding'] != null && data['funding']['goalAmount'] != null) {
+      return (data['funding']['goalAmount'] as num).toInt();
+    }
     if (data['raised'] != null && data['raised']['goal'] != null) {
       return (data['raised']['goal'] as num).toInt();
     }
@@ -111,6 +147,9 @@ class CardDetailsController extends GetxController {
   int get raisedAmount {
     final data = dealData.value;
     if (data == null) return 0;
+    if (data['funding'] != null && data['funding']['raisedAmount'] != null) {
+      return (data['funding']['raisedAmount'] as num).toInt();
+    }
     if (data['raised'] != null && data['raised']['amount'] != null) {
       return (data['raised']['amount'] as num).toInt();
     }
@@ -120,6 +159,9 @@ class CardDetailsController extends GetxController {
   double get raisedProgress {
     final data = dealData.value;
     if (data == null) return 0.0;
+    if (data['funding'] != null && data['funding']['progress'] != null) {
+      return (data['funding']['progress'] as num).toDouble() / 100.0;
+    }
     if (data['raised'] != null && data['raised']['progress'] != null) {
       return (data['raised']['progress'] as num).toDouble() / 100.0;
     }
@@ -128,15 +170,31 @@ class CardDetailsController extends GetxController {
     if (goal <= 0) return 0.0;
     return (raisedAmount / goal).clamp(0.0, 1.0);
   }
+
   int get profileScore =>
       (dealData.value?['profileCompletionScore'] as num?)?.toInt() ?? 0;
-  String get deadline => dealData.value?['deadline'] ?? '';
+
+  String get deadline {
+    final data = dealData.value;
+    if (data == null) return '';
+    return data['funding']?['deadline'] ?? data['deadline'] ?? '';
+  }
+
   bool get isVerified =>
       dealData.value?['verificationBadge']?['isVerified'] == true;
 
-  List<String> get media =>
-      (dealData.value?['media'] as List?)?.map((e) => e.toString()).toList() ??
-      [];
+  List<String> get media {
+    final data = dealData.value;
+    if (data == null) return [];
+    List<String> urls = [];
+    if (data['basicInfo']?['startupLogo'] != null) {
+      urls.add(data['basicInfo']['startupLogo'].toString());
+    }
+    if (data['media'] != null && data['media'] is List) {
+      urls.addAll((data['media'] as List).map((e) => e.toString()));
+    }
+    return urls;
+  }
 
   List<String> get tractionHighlights =>
       (dealData.value?['tractionHighlights'] as List?)
@@ -144,9 +202,17 @@ class CardDetailsController extends GetxController {
           .toList() ??
       [];
 
-  List<String> get faq =>
-      (dealData.value?['faq'] as List?)?.map((e) => e.toString()).toList() ??
-      [];
+  List<String> get faq {
+    final data = dealData.value;
+    if (data == null) return [];
+    if (data['execution']?['qa'] != null && data['execution']['qa'] is List) {
+      return (data['execution']['qa'] as List)
+          .map((e) => e['question']?.toString() ?? '')
+          .where((s) => s.isNotEmpty)
+          .toList();
+    }
+    return (data['faq'] as List?)?.map((e) => e.toString()).toList() ?? [];
+  }
 
   String get deadlineFormatted {
     if (deadline.isEmpty) return '—';
@@ -241,7 +307,12 @@ class CardDetailsController extends GetxController {
 
   // ── Additional Fields ─────────────────────────────────────
   String get businessModel => dealData.value?['businessModel'] ?? '—';
-  String get market => dealData.value?['market'] ?? '—';
+  String get market {
+    final data = dealData.value;
+    if (data == null) return '—';
+    return data['story']?['targetMarket'] ?? data['market'] ?? '—';
+  }
+
   String get geography => dealData.value?['geography'] ?? '—';
   String get founderDetails => dealData.value?['founderDetails'] ?? '—';
   String get team => dealData.value?['team'] ?? '—';
