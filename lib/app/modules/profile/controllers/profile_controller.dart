@@ -10,22 +10,27 @@ class ProfileController extends GetxController {
   final profileImage = ''.obs;
   final isVerified = false.obs;
   final isLoading = false.obs;
+  final userRole = 'founder'.obs;
 
   @override
   void onInit() {
     super.onInit();
     _loadUser();
-    fetchFounderProfile();
+    fetchProfile();
   }
 
-  Future<void> fetchFounderProfile() async {
+  Future<void> fetchProfile() async {
     try {
       isLoading.value = true;
       final token = storage.read('token');
       if (token == null) return;
 
+      final endpoint = userRole.value == 'investor' 
+          ? 'https://boost-funder.onrender.com/api/v1/users/me/investor-profile'
+          : 'https://boost-funder.onrender.com/api/v1/users/me/founder-profile';
+
       final response = await GetConnect().get(
-        'https://boost-funder.onrender.com/api/v1/users/me/founder-profile',
+        endpoint,
         headers: {
           'Authorization': 'Bearer $token',
           'content-type': 'application/json',
@@ -37,20 +42,31 @@ class ProfileController extends GetxController {
         if (data != null && data['user'] != null) {
           final user = data['user'];
 
-          if (user['firstName'] != null && user['lastName'] != null) {
-            userName.value = "${user['firstName']} ${user['lastName']}";
+          if (user['firstName'] != null) {
+            final first = user['firstName'] ?? '';
+            final last = user['lastName'] ?? '';
+            userName.value = "$first $last".trim();
           }
           if (user['email'] != null) {
             userEmail.value = user['email'];
           }
 
-          isVerified.value = user['isVerified'] ?? false;
+          // Strictly update isVerified from API response
+          isVerified.value = user['isVerified'] == true;
 
           if (user['profile'] != null) {
             if (user['profile']['profileImage'] != null) {
               profileImage.value = user['profile']['profileImage'];
             }
           }
+
+          // Persist updated user info to storage
+          final storedUser = storage.read('user') ?? {};
+          storedUser['isVerified'] = isVerified.value;
+          if (user['firstName'] != null) storedUser['firstName'] = user['firstName'];
+          if (user['lastName'] != null) storedUser['lastName'] = user['lastName'];
+          if (user['email'] != null) storedUser['email'] = user['email'];
+          storage.write('user', storedUser);
         }
       }
     } catch (e) {
@@ -71,7 +87,12 @@ class ProfileController extends GetxController {
       if (user['email'] != null) {
         userEmail.value = user['email'];
       }
-      isVerified.value = user['isVerified'] ?? false;
+      if (user['role'] != null) {
+        userRole.value = user['role'];
+      }
+      
+      // We no longer load isVerified from storage here to ensure 
+      // it is strictly updated only from the API response.
     }
   }
 

@@ -48,28 +48,46 @@ class EditProfileView extends GetView<EditProfileController> {
               _buildTextField(label: 'Bio', controller: controller.bioController, hint: 'Short bio', maxLines: 3),
               const SizedBox(height: 32),
               
-              _buildSectionTitle('Company Info'),
-              const SizedBox(height: 20),
-              _buildTextField(label: 'Company Name', controller: controller.companyNameController, hint: 'Enter company name', isRequired: true),
-              const SizedBox(height: 16),
-              _buildTextField(label: 'Company Website', controller: controller.companyWebsiteController, hint: 'https://...'),
-              const SizedBox(height: 16),
-              _buildDropdown(
-                label: 'Startup Stage',
-                value: controller.selectedStage.value,
-                items: controller.stages,
-                onChanged: (val) => controller.selectedStage.value = val!,
-              ),
-              const SizedBox(height: 16),
-              _buildTextField(label: 'Startup Description', controller: controller.startupDescriptionController, hint: 'Describe your startup', maxLines: 3),
-              const SizedBox(height: 16),
-              Row(
-                children: [
-                  Expanded(child: _buildTextField(label: 'Funding Goal', controller: controller.fundingGoalController, hint: 'e.g. 150000', keyboardType: TextInputType.number)),
-                  const SizedBox(width: 16),
-                  Expanded(child: _buildTextField(label: 'Team Size', controller: controller.teamSizeController, hint: 'e.g. 6', keyboardType: TextInputType.number)),
-                ],
-              ),
+              const SizedBox(height: 32),
+              
+              if (controller.userRole.value == 'founder') ...[
+                _buildSectionTitle('Company Info'),
+                const SizedBox(height: 20),
+                _buildTextField(label: 'Company Name', controller: controller.companyNameController, hint: 'Enter company name', isRequired: true),
+                const SizedBox(height: 16),
+                _buildTextField(label: 'Company Website', controller: controller.companyWebsiteController, hint: 'https://...'),
+                const SizedBox(height: 16),
+                _buildDropdown(
+                  label: 'Startup Stage',
+                  value: controller.selectedStage.value,
+                  items: controller.stages,
+                  onChanged: (val) => controller.selectedStage.value = val!,
+                ),
+                const SizedBox(height: 16),
+                _buildTextField(label: 'Startup Description', controller: controller.startupDescriptionController, hint: 'Describe your startup', maxLines: 3),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(child: _buildTextField(label: 'Funding Goal', controller: controller.fundingGoalController, hint: 'e.g. 150000', keyboardType: TextInputType.number)),
+                    const SizedBox(width: 16),
+                    Expanded(child: _buildTextField(label: 'Team Size', controller: controller.teamSizeController, hint: 'e.g. 6', keyboardType: TextInputType.number)),
+                  ],
+                ),
+              ] else ...[
+                _buildSectionTitle('Investment Preferences'),
+                const SizedBox(height: 20),
+                _buildTextField(label: 'Interests', controller: controller.interestsController, hint: 'e.g. fintech, saas, technology'),
+                const SizedBox(height: 16),
+                _buildTextField(label: 'Target Sectors', controller: controller.sectorsController, hint: 'e.g. technology, healthcare'),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    Expanded(child: _buildTextField(label: 'Min Investment', controller: controller.minInvestmentController, hint: 'e.g. 1000', keyboardType: TextInputType.number)),
+                    const SizedBox(width: 16),
+                    Expanded(child: _buildTextField(label: 'Max Investment', controller: controller.maxInvestmentController, hint: 'e.g. 50000', keyboardType: TextInputType.number)),
+                  ],
+                ),
+              ],
               const SizedBox(height: 32),
 
               _buildSectionTitle('Social Links'),

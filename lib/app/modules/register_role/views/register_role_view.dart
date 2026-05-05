@@ -31,9 +31,9 @@ class RegisterRoleView extends GetView<RegisterRoleController> {
                   const SizedBox(height: 20),
 
                   // Title
-                  const Text(
-                    'Select\nCategory',
-                    style: TextStyle(
+                  Text(
+                    'select_category'.tr,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -45,7 +45,7 @@ class RegisterRoleView extends GetView<RegisterRoleController> {
 
                   // Subtitle
                   Text(
-                    'Tell us how you want to use BoostFundr.',
+                    'tell_us_purpose'.tr,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.45),
                       fontSize: 15,
@@ -60,19 +60,19 @@ class RegisterRoleView extends GetView<RegisterRoleController> {
                     () => Column(
                       children: [
                         _RoleTile(
-                          label: 'Guest',
+                          label: 'guest'.tr,
                           isSelected: controller.selectedRole.value == 'Guest',
                           onTap: () => controller.selectRole('Guest'),
                         ),
                         const SizedBox(height: 16),
                         _RoleTile(
-                          label: 'Investor',
+                          label: 'investor'.tr,
                           isSelected: controller.selectedRole.value == 'Investor',
                           onTap: () => controller.selectRole('Investor'),
                         ),
                         const SizedBox(height: 16),
                         _RoleTile(
-                          label: 'Founder',
+                          label: 'founder'.tr,
                           isSelected: controller.selectedRole.value == 'Founder',
                           onTap: () => controller.selectRole('Founder'),
                         ),
@@ -105,9 +105,9 @@ class RegisterRoleView extends GetView<RegisterRoleController> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Continue',
-                      style: TextStyle(
+                    child: Text(
+                      'continue'.tr,
+                      style: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.2,

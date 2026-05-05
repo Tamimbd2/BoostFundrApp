@@ -1,11 +1,11 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/card_details_controller.dart';
-import '../../../routes/app_pages.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../controllers/mydealdetails_controller.dart';
 
-class CardDetailsView extends GetView<CardDetailsController> {
-  const CardDetailsView({super.key});
+class MydealdetailsView extends GetView<MydealdetailsController> {
+  const MydealdetailsView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,86 +14,32 @@ class CardDetailsView extends GetView<CardDetailsController> {
       backgroundColor: Colors.black,
       body: Obx(() {
         final isLoading = controller.isLoading.value;
-        final hasError = controller.hasError.value;
         final data = controller.dealData.value;
 
         if (isLoading) {
-          return Center(
+          return const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const CircularProgressIndicator(
+                CircularProgressIndicator(
                   color: Color(0xFF00FF88),
                   strokeWidth: 2,
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 16),
                 Text(
-                  'loading'.tr,
-                  style: const TextStyle(color: Colors.white54, fontSize: 12),
+                  'Loading your deal...',
+                  style: TextStyle(color: Colors.white54, fontSize: 12),
                 ),
               ],
             ),
           );
         }
 
-        if (hasError || data == null) {
-          return Center(
-            child: Padding(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.error_outline,
-                    color: Colors.redAccent,
-                    size: 48,
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    'failed'.tr,
-                    style: const TextStyle(color: Colors.white70, fontSize: 16),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Column(
-                      children: [
-                        Text(
-                          'ID: ${controller.dealId}',
-                          style: const TextStyle(
-                            color: Colors.amber,
-                            fontSize: 12,
-                            fontFamily: 'monospace',
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          'Error: ${controller.errorMessage.value}',
-                          style: const TextStyle(
-                            color: Colors.redAccent,
-                            fontSize: 11,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: controller.fetchDealDetail,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: neonGreen.withOpacity(0.1),
-                      foregroundColor: neonGreen,
-                      side: const BorderSide(color: neonGreen),
-                    ),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
+        if (data == null) {
+          return const Center(
+            child: Text(
+              'No deal data found',
+              style: TextStyle(color: Colors.white70),
             ),
           );
         }
@@ -115,6 +61,8 @@ class CardDetailsView extends GetView<CardDetailsController> {
                     const SizedBox(height: 20),
                     _buildFundingCard(neonGreen),
                     const SizedBox(height: 20),
+                    _buildMetricsGrid(neonGreen),
+                    const SizedBox(height: 20),
                     _buildProfileScoreCard(neonGreen),
                     const SizedBox(height: 20),
 
@@ -129,108 +77,72 @@ class CardDetailsView extends GetView<CardDetailsController> {
                       Icons.lightbulb_outline,
                       controller.solution,
                     ),
+                    const SizedBox(height: 14),
+                    _buildInfoSection(
+                      'Business Model',
+                      Icons.business_center_outlined,
+                      controller.businessModel,
+                    ),
                     const SizedBox(height: 24),
 
                     _buildInfoSection(
-                      'Problem',
-                      Icons.warning_amber_outlined,
-                      controller.problem,
+                      'Market',
+                      Icons.pie_chart_outline,
+                      controller.market,
                     ),
                     const SizedBox(height: 14),
                     _buildInfoSection(
-                      'Solution',
-                      Icons.lightbulb_outline,
-                      controller.solution,
+                      'Geography',
+                      Icons.public,
+                      controller.location,
                     ),
                     const SizedBox(height: 24),
 
-                    _buildLockedSection(
-                      fieldName: 'businessModel',
-                      child: _buildInfoSection(
-                        'business_model'.tr,
-                        Icons.business_center_outlined,
-                        controller.businessModel,
-                      ),
+                    _buildInfoSection(
+                      'Founder Details',
+                      Icons.person_outline,
+                      controller.founderDetails,
                     ),
                     const SizedBox(height: 14),
+                    _buildInfoSection(
+                      'Team Info',
+                      Icons.groups_outlined,
+                      controller.team,
+                    ),
+                    const SizedBox(height: 24),
 
-                    _buildLockedSection(
-                      fieldName: 'market',
-                      child: Column(
-                        children: [
-                          _buildInfoSection(
-                            'market'.tr,
-                            Icons.pie_chart_outline,
-                            controller.market,
-                          ),
-                          const SizedBox(height: 14),
-                          _buildInfoSection(
-                            'Geography',
-                            Icons.public,
-                            controller.geography,
-                          ),
-                        ],
-                      ),
+                    _buildInfoSection(
+                      'Traction Details',
+                      Icons.trending_up,
+                      controller.traction,
                     ),
                     const SizedBox(height: 14),
-
-                    _buildLockedSection(
-                      fieldName: 'team',
-                      child: Column(
-                        children: [
-                          _buildInfoSection(
-                            'Founder Details',
-                            Icons.person_outline,
-                            controller.founderDetails,
-                          ),
-                          const SizedBox(height: 14),
-                          _buildInfoSection(
-                            'Team Info',
-                            Icons.groups_outlined,
-                            controller.team,
-                          ),
-                        ],
-                      ),
+                    _buildInfoSection(
+                      'Market Strategy',
+                      Icons.map_outlined,
+                      controller.goToMarket,
                     ),
                     const SizedBox(height: 14),
-
-                    _buildLockedSection(
-                      fieldName: 'traction',
-                      child: _buildInfoSection(
-                        'Traction Details',
-                        Icons.trending_up,
-                        controller.traction,
-                      ),
+                    _buildInfoSection(
+                      'Competitor & Advantage',
+                      Icons.military_tech_outlined,
+                      'Top Competitor: ${controller.topCompetitor}\nAdvantage: ${controller.advantage}',
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 24),
 
-                    _buildLockedSection(
-                      fieldName: 'useOfFunds',
-                      child: _buildInfoSection(
-                        'Use of Funds',
-                        Icons.account_balance_wallet_outlined,
-                        controller.useOfFunds,
-                      ),
+                    _buildInfoSection(
+                      'Use of Funds',
+                      Icons.account_balance_wallet_outlined,
+                      controller.useOfFunds,
                     ),
                     const SizedBox(height: 24),
 
                     if (controller.tractionHighlights.isNotEmpty) ...[
                       _buildSectionTitle('Traction Highlights'),
                       const SizedBox(height: 10),
-                      _buildLockedSection(
-                        fieldName: 'tractionHighlights',
-                        child: _buildTractionChips(neonGreen),
-                      ),
+                      _buildTractionChips(neonGreen),
                       const SizedBox(height: 24),
                     ],
-
-                    _buildSectionTitle('Private Documents'),
-                    const SizedBox(height: 10),
-                    _buildLockedSection(
-                      fieldName: 'privateDocuments',
-                      child: _buildPrivateDocumentsSection(),
-                    ),
-                    const SizedBox(height: 24),
 
                     if (controller.faq.isNotEmpty) ...[
                       _buildSectionTitle('FAQ'),
@@ -238,6 +150,12 @@ class CardDetailsView extends GetView<CardDetailsController> {
                       _buildFaqList(),
                       const SizedBox(height: 24),
                     ],
+
+                    _buildSectionTitle('Connect & Learn More'),
+                    const SizedBox(height: 10),
+                    _buildContactButtons(neonGreen),
+                    const SizedBox(height: 24),
+
                     _buildDeadlineRow(neonGreen),
                     const SizedBox(height: 60),
                   ],
@@ -250,9 +168,8 @@ class CardDetailsView extends GetView<CardDetailsController> {
     );
   }
 
-  // ── Sliver App Bar ──────────────────────────────────────
   Widget _buildSliverAppBar(Color neonGreen) {
-    final img = controller.media.isNotEmpty ? controller.media.first : null;
+    final img = controller.headerImage;
     return SliverAppBar(
       expandedHeight: 240,
       pinned: true,
@@ -317,7 +234,6 @@ class CardDetailsView extends GetView<CardDetailsController> {
         : status == 'draft'
         ? const Color(0xFFFBBF24)
         : Colors.redAccent;
-
     return Row(
       children: [
         _chip(controller.category, const Color(0xFF1ABC9C)),
@@ -325,10 +241,6 @@ class CardDetailsView extends GetView<CardDetailsController> {
         _chip(controller.stage, const Color(0xFF818CF8)),
         const SizedBox(width: 8),
         _chip(status.toUpperCase(), statusColor),
-        if (controller.isVerified) ...[
-          const SizedBox(width: 8),
-          const Icon(Icons.verified, color: Color(0xFF22C55E), size: 18),
-        ],
       ],
     );
   }
@@ -351,9 +263,7 @@ class CardDetailsView extends GetView<CardDetailsController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          controller.tagline.isNotEmpty
-              ? '"${controller.tagline}"'
-              : controller.shortPitch,
+          '"${controller.tagline}"',
           style: const TextStyle(
             color: Colors.white,
             fontSize: 18,
@@ -361,36 +271,24 @@ class CardDetailsView extends GetView<CardDetailsController> {
             height: 1.4,
           ),
         ),
-        if (controller.tagline.isNotEmpty) ...[
-          const SizedBox(height: 8),
-          Text(
-            controller.shortPitch,
-            style: TextStyle(
-              color: Colors.white.withOpacity(0.5),
-              fontSize: 13,
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Icon(
+              Icons.location_on_outlined,
+              color: Colors.white.withOpacity(0.3),
+              size: 14,
             ),
-          ),
-        ],
-        if (controller.location.isNotEmpty && controller.location != '—') ...[
-          const SizedBox(height: 10),
-          Row(
-            children: [
-              Icon(
-                Icons.location_on_outlined,
+            const SizedBox(width: 4),
+            Text(
+              controller.location,
+              style: TextStyle(
                 color: Colors.white.withOpacity(0.3),
-                size: 14,
+                fontSize: 12,
               ),
-              const SizedBox(width: 4),
-              Text(
-                controller.location,
-                style: TextStyle(
-                  color: Colors.white.withOpacity(0.3),
-                  fontSize: 12,
-                ),
-              ),
-            ],
-          ),
-        ],
+            ),
+          ],
+        ),
       ],
     );
   }
@@ -404,7 +302,6 @@ class CardDetailsView extends GetView<CardDetailsController> {
       RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
       (m) => '${m[1]},',
     );
-
     return _glassCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -431,13 +328,26 @@ class CardDetailsView extends GetView<CardDetailsController> {
                   ),
                 ],
               ),
-              Text(
-                '${(ratio * 100).toInt()}%',
-                style: TextStyle(
-                  color: neonGreen,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    '${(ratio * 100).toInt()}%',
+                    style: TextStyle(
+                      color: neonGreen,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  if (controller.minimumInvestment > 0)
+                    Text(
+                      'Min. $cur ${fmt(controller.minimumInvestment)}',
+                      style: const TextStyle(
+                        color: Colors.white30,
+                        fontSize: 10,
+                      ),
+                    ),
+                ],
               ),
             ],
           ),
@@ -454,6 +364,79 @@ class CardDetailsView extends GetView<CardDetailsController> {
     );
   }
 
+  Widget _buildMetricsGrid(Color neonGreen) {
+    return _glassCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionLabel(
+            'Metrics & Growth',
+            Icons.analytics_outlined,
+            neonGreen,
+          ),
+          const SizedBox(height: 16),
+          GridView.count(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            crossAxisCount: 3,
+            mainAxisSpacing: 12,
+            crossAxisSpacing: 12,
+            childAspectRatio: 1.1,
+            children: [
+              _metricItem('Users', controller.users, Icons.people_outline),
+              _metricItem(
+                'Growth',
+                '${controller.growthRate}%',
+                Icons.show_chart,
+              ),
+              _metricItem(
+                'Revenue',
+                controller.revenue,
+                Icons.monetization_on_outlined,
+              ),
+              _metricItem('CAC', controller.cac, Icons.person_add_alt),
+              _metricItem('LTV', controller.ltv, Icons.payments_outlined),
+              _metricItem('Churn', controller.churn, Icons.autorenew),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _metricItem(String label, String value, IconData icon) {
+    return Container(
+      padding: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.white.withOpacity(0.03),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(icon, color: Colors.white30, size: 14),
+          const SizedBox(height: 4),
+          Text(
+            value,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 9),
+            textAlign: TextAlign.center,
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildProfileScoreCard(Color neonGreen) {
     final score = controller.profileScore;
     final color = score >= 80
@@ -461,7 +444,6 @@ class CardDetailsView extends GetView<CardDetailsController> {
         : score >= 50
         ? Colors.orange
         : Colors.red;
-
     return _glassCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -577,6 +559,63 @@ class CardDetailsView extends GetView<CardDetailsController> {
     );
   }
 
+  Widget _buildContactButtons(Color neonGreen) {
+    return Column(
+      children: [
+        if (controller.startupWebsite.isNotEmpty)
+          _actionButton('Visit Website', Icons.language, neonGreen, () async {
+            final url = Uri.parse(controller.startupWebsite.startsWith('http') 
+                ? controller.startupWebsite 
+                : 'https://${controller.startupWebsite}');
+            if (await canLaunchUrl(url)) {
+              await launchUrl(url, mode: LaunchMode.externalApplication);
+            }
+          }),
+        if (controller.startupWebsite.isNotEmpty &&
+            controller.whatsappNumber.isNotEmpty)
+          const SizedBox(height: 12),
+        if (controller.whatsappNumber.isNotEmpty)
+          _actionButton(
+            'WhatsApp Founder',
+            Icons.chat_bubble_outline,
+            const Color(0xFF25D366),
+            () async {
+              final phone = controller.whatsappNumber.replaceAll(RegExp(r'\D'), '');
+              final url = Uri.parse('https://wa.me/$phone');
+              if (await canLaunchUrl(url)) {
+                await launchUrl(url, mode: LaunchMode.externalApplication);
+              }
+            },
+          ),
+      ],
+    );
+  }
+
+  Widget _actionButton(
+    String label,
+    IconData icon,
+    Color color,
+    VoidCallback onTap,
+  ) {
+    return SizedBox(
+      width: double.infinity,
+      child: ElevatedButton.icon(
+        onPressed: onTap,
+        icon: Icon(icon, size: 18),
+        label: Text(label),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: color.withOpacity(0.1),
+          foregroundColor: color,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: color.withOpacity(0.5)),
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildDeadlineRow(Color neonGreen) {
     final days = controller.daysLeft;
     final color = days < 7 ? Colors.redAccent : neonGreen;
@@ -633,109 +672,6 @@ class CardDetailsView extends GetView<CardDetailsController> {
       color: Colors.white,
       fontSize: 16,
       fontWeight: FontWeight.bold,
-    ),
-  );
-
-  Widget _buildLockedSection({
-    required String fieldName,
-    required Widget child,
-  }) {
-    return Obx(() {
-      final isLocked = controller.isFieldLocked(fieldName);
-      if (!isLocked) return child;
-      
-      final currentPlan = controller.userAccessLevel.toLowerCase();
-      final target = controller.getTargetLevelForField(fieldName);
-      
-      return ClipRRect(
-        borderRadius: BorderRadius.circular(16),
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            ImageFiltered(
-              imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-              child: child,
-            ),
-            Container(color: Colors.black.withOpacity(0.5)),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.lock_person_outlined,
-                    color: Color(0xFF00FF88),
-                    size: 32,
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    '${'unlock_with'.tr} $target',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  if (currentPlan == 'free') ...[
-                    // Show both Pro and Elite for free users
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () => Get.toNamed(Routes.SUBSCRIPTIONS),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF22C55E),
-                          foregroundColor: Colors.black,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                        child: Text('upgrade_to_pro'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    SizedBox(
-                      width: double.infinity,
-                      child: OutlinedButton(
-                        onPressed: () => Get.toNamed(Routes.SUBSCRIPTIONS),
-                        style: OutlinedButton.styleFrom(
-                          side: const BorderSide(color: Color(0xFF22C55E)),
-                          foregroundColor: const Color(0xFF22C55E),
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                        child: Text('upgrade_to_elite'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      ),
-                    ),
-                  ] else if (currentPlan == 'pro') ...[
-                    // Pro users only need to upgrade to Elite
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed: () => Get.toNamed(Routes.SUBSCRIPTIONS),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF22C55E),
-                          foregroundColor: Colors.black,
-                          padding: const EdgeInsets.symmetric(vertical: 12),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                        ),
-                        child: Text('upgrade_to_elite'.tr, style: const TextStyle(fontWeight: FontWeight.bold)),
-                      ),
-                    ),
-                  ],
-                ],
-              ),
-            ),
-          ],
-        ),
-      );
-    });
-  }
-
-  Widget _buildPrivateDocumentsSection() => _glassCard(
-    child: const Center(
-      child: Text(
-        'Confidential documents locked',
-        style: TextStyle(color: Colors.white30, fontSize: 12),
-      ),
     ),
   );
 }

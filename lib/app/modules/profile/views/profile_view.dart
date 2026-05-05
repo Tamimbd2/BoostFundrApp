@@ -14,7 +14,7 @@ class ProfileView extends GetView<ProfileController> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          CustomAppBar(title: 'Profile'),
+          CustomAppBar(title: 'profile'.tr),
           Expanded(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -31,18 +31,44 @@ class ProfileView extends GetView<ProfileController> {
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(color: const Color(0xFF1E1E1E)),
                     ),
-                    child: Column(
-                      children: [
-                        _buildMenuItem(Icons.campaign_outlined, 'My Deal', onTap: () => Get.toNamed(Routes.MY_CAMPAIGN)),
-                        _buildDivider(),
-                        _buildMenuItem(Icons.bookmark_outline, 'Save Deal', onTap: () => Get.toNamed(Routes.SAVE_CAMPAIGN)),
-                        _buildDivider(),
-                        _buildMenuItem(Icons.account_balance_wallet_outlined, 'Wallet', onTap: () => Get.toNamed(Routes.WALLET)),
-                        _buildDivider(),
-                        _buildMenuItem(Icons.account_balance_outlined, 'Bank Details', onTap: () => Get.toNamed(Routes.BANK_DETAILS)),
-                        _buildDivider(),
-                        _buildMenuItem(Icons.verified_outlined, 'Verification', onTap: () => Get.toNamed(Routes.VERIFICATIONS)),
-                      ],
+                    child: Obx(
+                      () => Column(
+                        children: [
+                          if (controller.userRole.value == 'founder') ...[
+                            _buildMenuItem(
+                              Icons.campaign_outlined,
+                              'my_deal'.tr,
+                              onTap: () => Get.toNamed(Routes.MY_CAMPAIGN),
+                            ),
+                            _buildDivider(),
+                          ],
+                          if (controller.userRole.value == 'investor') ...[
+                            _buildMenuItem(
+                              Icons.bookmark_outline,
+                              'save_deal'.tr,
+                              onTap: () => Get.toNamed(Routes.SAVE_CAMPAIGN),
+                            ),
+                            _buildDivider(),
+                          ],
+                          _buildMenuItem(
+                            Icons.account_balance_wallet_outlined,
+                            'wallet'.tr,
+                            onTap: () => Get.toNamed(Routes.WALLET),
+                          ),
+                          _buildDivider(),
+                          _buildMenuItem(
+                            Icons.account_balance_outlined,
+                            'bank_details'.tr,
+                            onTap: () => Get.toNamed(Routes.BANK_DETAILS),
+                          ),
+                          _buildDivider(),
+                          _buildMenuItem(
+                            Icons.verified_outlined,
+                            'verification'.tr,
+                            onTap: () => Get.toNamed(Routes.VERIFICATIONS),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -56,17 +82,39 @@ class ProfileView extends GetView<ProfileController> {
                     ),
                     child: Column(
                       children: [
-                        _buildMenuItem(Icons.settings_outlined, 'Settings', onTap: () => Get.toNamed(Routes.SETTING)),
-                        _buildDivider(),
-                        _buildMenuItem(Icons.send_outlined, 'Contact Us', onTap: () => Get.toNamed(Routes.CONTACT_U_S)),
-                        _buildDivider(),
-                        _buildMenuItem(Icons.shield_outlined, 'Privacy Policy', onTap: () => Get.toNamed(Routes.PRIVACY_POLICY)),
-                        _buildDivider(),
-                        _buildMenuItem(Icons.info_outline, 'Platform Guidelines', onTap: () => Get.toNamed(Routes.PLATFORM_GUIDLINES)),
+                        _buildMenuItem(
+                          Icons.settings_outlined,
+                          'settings'.tr,
+                          onTap: () => Get.toNamed(Routes.SETTING),
+                        ),
                         _buildDivider(),
                         _buildMenuItem(
-                          Icons.logout, 
-                          'Logout', 
+                          Icons.language_outlined,
+                          'language'.tr,
+                          onTap: () => Get.toNamed(Routes.SELECT_LANGUAGE, arguments: 'profile'),
+                        ),
+                        _buildDivider(),
+                        _buildMenuItem(
+                          Icons.send_outlined,
+                          'contact_us'.tr,
+                          onTap: () => Get.toNamed(Routes.CONTACT_U_S),
+                        ),
+                        _buildDivider(),
+                        _buildMenuItem(
+                          Icons.shield_outlined,
+                          'privacy_policy'.tr,
+                          onTap: () => Get.toNamed(Routes.PRIVACY_POLICY),
+                        ),
+                        _buildDivider(),
+                        _buildMenuItem(
+                          Icons.info_outline,
+                          'platform_guidelines'.tr,
+                          onTap: () => Get.toNamed(Routes.PLATFORM_GUIDLINES),
+                        ),
+                        _buildDivider(),
+                        _buildMenuItem(
+                          Icons.logout,
+                          'logout'.tr,
                           color: Colors.redAccent,
                           onTap: () => controller.logout(),
                         ),
@@ -106,62 +154,76 @@ class ProfileView extends GetView<ProfileController> {
               shape: BoxShape.circle,
               border: Border.all(color: const Color(0xFF22C55E), width: 1.5),
             ),
-            child: Obx(() => CircleAvatar(
-              radius: 34,
-              backgroundColor: const Color(0xFF1A1A1A),
-              backgroundImage: controller.profileImage.value.isNotEmpty 
-                ? NetworkImage(controller.profileImage.value) 
-                : null,
-              child: controller.profileImage.value.isEmpty 
-                ? const Icon(Icons.person, color: Color(0xFF22C55E), size: 40)
-                : null,
-            )),
+            child: Obx(
+              () => CircleAvatar(
+                radius: 34,
+                backgroundColor: const Color(0xFF1A1A1A),
+                backgroundImage: controller.profileImage.value.isNotEmpty
+                    ? NetworkImage(controller.profileImage.value)
+                    : null,
+                child: controller.profileImage.value.isEmpty
+                    ? const Icon(
+                        Icons.person,
+                        color: Color(0xFF22C55E),
+                        size: 40,
+                      )
+                    : null,
+              ),
+            ),
           ),
           const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Obx(() => Row(
-                  children: [
-                    Text(
-                      controller.userName.value,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    if (controller.isVerified.value)
-                      const Padding(
-                        padding: EdgeInsets.only(left: 6),
-                        child: Icon(
-                          Icons.verified,
-                          color: Color(0xFF22C55E), // Theme green
-                          size: 18,
+                Obx(
+                  () => Row(
+                    children: [
+                      Flexible(
+                        child: Text(
+                          controller.userName.value,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                          maxLines: 1,
                         ),
                       ),
-                  ],
-                )),
-                const SizedBox(height: 4),
-                Obx(() => Text(
-                  controller.userEmail.value,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
-                    fontSize: 14,
+                      if (controller.isVerified.value)
+                        const Padding(
+                          padding: EdgeInsets.only(left: 6),
+                          child: Icon(
+                            Icons.verified,
+                            color: Color(0xFF22C55E), // Theme green
+                            size: 18,
+                          ),
+                        ),
+                    ],
                   ),
-                )),
+                ),
+                const SizedBox(height: 4),
+                Obx(
+                  () => Text(
+                    controller.userEmail.value,
+                    style: TextStyle(
+                      color: Colors.white.withOpacity(0.6),
+                      fontSize: 14,
+                    ),
+                  ),
+                ),
                 const SizedBox(height: 12),
                 GestureDetector(
                   onTap: () async {
                     final result = await Get.toNamed(Routes.EDIT_PROFILE);
                     if (result == true) {
-                      controller.fetchFounderProfile();
+                      controller.fetchProfile();
                     }
                   },
-                  child: const Text(
-                    'Edit Profile',
-                    style: TextStyle(
+                  child: Text(
+                    'edit_profile'.tr,
+                    style: const TextStyle(
                       color: Color(0xFF22C55E),
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
@@ -177,7 +239,12 @@ class ProfileView extends GetView<ProfileController> {
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title, {Color? color, VoidCallback? onTap}) {
+  Widget _buildMenuItem(
+    IconData icon,
+    String title, {
+    Color? color,
+    VoidCallback? onTap,
+  }) {
     return InkWell(
       onTap: onTap ?? () {},
       borderRadius: BorderRadius.circular(20),
@@ -196,7 +263,11 @@ class ProfileView extends GetView<ProfileController> {
               ),
             ),
             const Spacer(),
-            Icon(Icons.arrow_forward_ios, color: Colors.white.withOpacity(0.3), size: 16),
+            Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.white.withOpacity(0.3),
+              size: 16,
+            ),
           ],
         ),
       ),

@@ -31,9 +31,9 @@ class LoginView extends GetView<LoginController> {
                   const SizedBox(height: 20),
 
                   // Title
-                  const Text(
-                    'Welcome Back',
-                    style: TextStyle(
+                  Text(
+                    'welcome_back'.tr,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -44,7 +44,7 @@ class LoginView extends GetView<LoginController> {
 
                   // Subtitle
                   Text(
-                    'Log in to your account to continue.',
+                    'login_to_continue'.tr,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.45),
                       fontSize: 15,
@@ -56,8 +56,8 @@ class LoginView extends GetView<LoginController> {
 
                   // Email Field
                   _buildTextField(
-                    label: 'Email Address',
-                    hintText: 'Enter your email',
+                    label: 'email'.tr,
+                    hintText: 'enter_email'.tr,
                     keyboardType: TextInputType.emailAddress,
                     onChanged: (val) => controller.email.value = val,
                   ),
@@ -65,8 +65,8 @@ class LoginView extends GetView<LoginController> {
 
                   // Password Field
                   Obx(() => _buildTextField(
-                    label: 'Password',
-                    hintText: 'Enter your password',
+                    label: 'password'.tr,
+                    hintText: 'enter_password'.tr,
                     isPassword: !controller.isPasswordVisible.value,
                     onChanged: (val) => controller.password.value = val,
                     suffixIcon: IconButton(
@@ -89,7 +89,7 @@ class LoginView extends GetView<LoginController> {
                     child: TextButton(
                       onPressed: () {},
                       child: Text(
-                        'Forgot Password?',
+                        'forgot_password'.tr,
                         style: TextStyle(
                           color: const Color(0xFF22C55E).withOpacity(0.9),
                           fontSize: 14,
@@ -124,9 +124,9 @@ class LoginView extends GetView<LoginController> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Text(
-                              'Sign In',
-                              style: TextStyle(
+                          : Text(
+                              'sign_in'.tr,
+                              style: const TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.w600,
                                 letterSpacing: 0.2,
@@ -140,7 +140,7 @@ class LoginView extends GetView<LoginController> {
                   // Or divider
                   Center(
                     child: Text(
-                      'OR',
+                      'or'.tr,
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.3),
                         fontSize: 12,
@@ -178,7 +178,7 @@ class LoginView extends GetView<LoginController> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          "Don't have an account? ",
+                          'dont_have_account'.tr + ' ',
                           style: TextStyle(
                             color: Colors.white.withOpacity(0.45),
                             fontSize: 14,
@@ -186,9 +186,9 @@ class LoginView extends GetView<LoginController> {
                         ),
                         GestureDetector(
                           onTap: () => Get.toNamed(Routes.REGISTER_ROLE),
-                          child: const Text(
-                            "Sign Up",
-                            style: TextStyle(
+                          child: Text(
+                            'signup'.tr,
+                            style: const TextStyle(
                               color: Color(0xFF22C55E),
                               fontSize: 14,
                               fontWeight: FontWeight.bold,
@@ -267,9 +267,9 @@ class LoginView extends GetView<LoginController> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  const Text(
-                    "Select Your Role",
-                    style: TextStyle(
+                  Text(
+                    'select_role'.tr,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -283,7 +283,7 @@ class LoginView extends GetView<LoginController> {
               ),
               const SizedBox(height: 8),
               Text(
-                "Please choose a role to continue with Google.",
+                'select_role_desc'.tr,
                 style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14),
               ),
               const SizedBox(height: 24),
@@ -291,7 +291,7 @@ class LoginView extends GetView<LoginController> {
                 children: [
                   Expanded(
                     child: Obx(() => _buildRoleCard(
-                          title: "Investor",
+                          title: 'investor'.tr,
                           icon: Icons.person_outline,
                           isSelected: controller.selectedRole.value == 'investor',
                           onTap: () => controller.selectedRole.value = 'investor',
@@ -300,7 +300,7 @@ class LoginView extends GetView<LoginController> {
                   const SizedBox(width: 12),
                   Expanded(
                     child: Obx(() => _buildRoleCard(
-                          title: "Founder",
+                          title: 'founder'.tr,
                           icon: Icons.rocket_launch_outlined,
                           isSelected: controller.selectedRole.value == 'founder',
                           onTap: () => controller.selectedRole.value = 'founder',
@@ -324,9 +324,9 @@ class LoginView extends GetView<LoginController> {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text(
-                    "Continue",
-                    style: TextStyle(
+                  child: Text(
+                    'continue'.tr,
+                    style: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                       fontSize: 16,

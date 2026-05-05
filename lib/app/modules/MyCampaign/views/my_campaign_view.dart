@@ -73,30 +73,32 @@ class MyCampaignView extends GetView<MyCampaignController> {
   Widget _buildCampaignCard(DealModel deal) {
     final raised = (deal.raisedAmount ?? 0).toInt();
     final goal = (deal.raisedGoal ?? 100000).toInt();
-    final progress = goal > 0 ? ((deal.raisedProgress ?? 0) / 100).clamp(0.0, 1.0) : 0.0;
+    final progress = goal > 0
+        ? ((deal.raisedProgress ?? 0) / 100).clamp(0.0, 1.0)
+        : 0.0;
 
     // profileCompletionScore badge (vibrant colors)
     final profileScore = (deal.profileCompletionScore ?? 0).clamp(0, 100);
     final Color scoreColor = profileScore >= 80
         ? const Color(0xFF00FF55) // Neon Green
         : profileScore >= 40
-            ? const Color(0xFFFFB020) // Vibrant Yellow/Orange
-            : const Color(0xFFFF5252); // Neon Red
+        ? const Color(0xFFFFB020) // Vibrant Yellow/Orange
+        : const Color(0xFFFF5252); // Neon Red
 
     String fmt(int n) => n.toString().replaceAllMapped(
-          RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
-          (m) => '${m[1]},',
-        );
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]},',
+    );
 
     final daysLeft = 12 + ((deal.id ?? '').hashCode.abs() % 10);
     final Color timeColor = daysLeft <= 12
         ? const Color(0xFFFFB020) // Yellow for 12 days
         : daysLeft > 15
-            ? const Color(0xFFFF5252) // Red for 18 days
-            : const Color(0xFF00FF55); // Green otherwise
+        ? const Color(0xFFFF5252) // Red for 18 days
+        : const Color(0xFF00FF55); // Green otherwise
 
     return GestureDetector(
-      onTap: () => Get.toNamed(Routes.CARD_DETAILS, arguments: deal.id),
+      onTap: () => Get.toNamed(Routes.MYDEALDETAILS, arguments: deal),
       child: Container(
         margin: const EdgeInsets.only(bottom: 16),
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
@@ -126,7 +128,11 @@ class MyCampaignView extends GetView<MyCampaignController> {
                         color: const Color(0xFF1C2333),
                         borderRadius: BorderRadius.circular(14),
                       ),
-                      child: const Icon(Icons.image, color: Colors.white24, size: 28),
+                      child: const Icon(
+                        Icons.image,
+                        color: Colors.white24,
+                        size: 28,
+                      ),
                     ),
                   ),
                 ),
@@ -135,7 +141,10 @@ class MyCampaignView extends GetView<MyCampaignController> {
                   bottom: -8,
                   left: -8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF111111),
                       borderRadius: BorderRadius.circular(20),
@@ -181,12 +190,21 @@ class MyCampaignView extends GetView<MyCampaignController> {
                       const SizedBox(width: 8),
                       PopupMenuButton<String>(
                         padding: EdgeInsets.zero,
-                        icon: const Icon(Icons.more_horiz, color: Colors.white54, size: 20),
+                        icon: const Icon(
+                          Icons.more_horiz,
+                          color: Colors.white54,
+                          size: 20,
+                        ),
                         color: const Color(0xFF1C1C1E),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                         onSelected: (value) {
                           if (value == 'edit') {
-                            Get.toNamed(Routes.CREATE_CAMPAIGN, arguments: deal.id);
+                            Get.toNamed(
+                              Routes.CREATE_CAMPAIGN,
+                              arguments: deal,
+                            );
                           }
                         },
                         itemBuilder: (context) => [
@@ -194,7 +212,11 @@ class MyCampaignView extends GetView<MyCampaignController> {
                             value: 'edit',
                             child: Row(
                               children: [
-                                const Icon(Icons.edit_outlined, color: Colors.white, size: 18),
+                                const Icon(
+                                  Icons.edit_outlined,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
                                 const SizedBox(width: 12),
                                 Text(
                                   'Edit Deal',
@@ -210,7 +232,11 @@ class MyCampaignView extends GetView<MyCampaignController> {
                             value: 'delete',
                             child: Row(
                               children: [
-                                const Icon(Icons.delete_outline, color: Colors.redAccent, size: 18),
+                                const Icon(
+                                  Icons.delete_outline,
+                                  color: Colors.redAccent,
+                                  size: 18,
+                                ),
                                 const SizedBox(width: 12),
                                 Text(
                                   'Delete',
@@ -230,7 +256,10 @@ class MyCampaignView extends GetView<MyCampaignController> {
 
                   // Category Badge
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: const Color(0xFF1A3B2A), // Dark green background
                       borderRadius: BorderRadius.circular(20),
@@ -262,7 +291,9 @@ class MyCampaignView extends GetView<MyCampaignController> {
                     borderRadius: BorderRadius.circular(10),
                     child: LinearProgressIndicator(
                       value: progress,
-                      backgroundColor: const Color(0xFF2C2C2E), // Darker unfilled background
+                      backgroundColor: const Color(
+                        0xFF2C2C2E,
+                      ), // Darker unfilled background
                       color: scoreColor,
                       minHeight: 4,
                     ),
@@ -273,7 +304,10 @@ class MyCampaignView extends GetView<MyCampaignController> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 3,
+                      ),
                       decoration: BoxDecoration(
                         color: const Color(0xFF111111),
                         borderRadius: BorderRadius.circular(20),

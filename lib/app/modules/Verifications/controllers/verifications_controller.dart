@@ -1,14 +1,17 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
 import '../../../data/providers/verifications_provider.dart';
+import '../../../data/api_constants.dart';
 
 class VerificationsController extends GetxController {
   final VerificationsProvider _provider = Get.put(VerificationsProvider());
   final ImagePicker _picker = ImagePicker();
+  final storage = GetStorage();
   
   final isLoading = false.obs;
   final isSubmitting = false.obs;
@@ -18,26 +21,40 @@ class VerificationsController extends GetxController {
   final addressStatus = 'Not Started'.obs;
   final overallStatus = 'Not Started'.obs;
   final isVerified = false.obs;
+  final userRole = 'founder'.obs;
 
   // Selected files
-  final nidFront = Rxn<XFile>();
-  final nidBack = Rxn<XFile>();
-  final businessCertificate = Rxn<XFile>();
+  final nicFront = Rxn<XFile>();
+  final nicBack = Rxn<XFile>();
+  final passport = Rxn<XFile>();
+  final drivingLicence = Rxn<XFile>();
+  final selfie = Rxn<XFile>();
 
   @override
   void onInit() {
     super.onInit();
+    final user = storage.read('user');
+    userRole.value = user?['role'] ?? 'founder';
     fetchStatus();
   }
 
   Future<void> fetchStatus() async {
     try {
       isLoading.value = true;
+      
+      // 1. Check existing verification status provider
       final response = await _provider.getVerificationStatus();
       
       if (response.status.isOk) {
         final data = response.body['data'];
-        if (data != null && data['verification'] != null) {
+        // The API for investor might return status differently
+        if (data != null && data['status'] != null) {
+          final status = _mapStatus(data['status']);
+          overallStatus.value = status;
+          identityStatus.value = status;
+          businessStatus.value = status;
+          isVerified.value = status == 'Verified';
+        } else if (data != null && data['verification'] != null) {
           final verification = data['verification'];
           final status = _mapStatus(verification['status']);
           overallStatus.value = status;
@@ -52,8 +69,37 @@ class VerificationsController extends GetxController {
           isVerified.value = status == 'Verified' || data['isVerified'] == true;
         }
       }
+
+      // 2. STRICTOR CHECK: Call profile API
+      final token = storage.read('token');
+      if (token != null) {
+        final endpoint = userRole.value == 'investor' 
+            ? ApiConstants.investorProfile 
+            : ApiConstants.founderProfile;
+            
+        final profileResponse = await GetConnect().get(
+          '${ApiConstants.baseUrl}$endpoint',
+          headers: {
+            'Authorization': 'Bearer $token',
+            'content-type': 'application/json',
+          },
+        );
+
+        if (profileResponse.status.isOk && profileResponse.body != null) {
+          final profileData = profileResponse.body['data'];
+          if (profileData != null && profileData['user'] != null) {
+            final user = profileData['user'];
+            if (user['isVerified'] == true) {
+              isVerified.value = true;
+              overallStatus.value = 'Verified';
+              identityStatus.value = 'Verified';
+              businessStatus.value = 'Verified';
+            }
+          }
+        }
+      }
     } catch (e) {
-      print('Error fetching verification status: $e');
+      debugPrint('Error fetching verification status: $e');
     } finally {
       isLoading.value = false;
     }
@@ -69,14 +115,20 @@ class VerificationsController extends GetxController {
       final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
       if (image != null) {
         switch (type) {
-          case 'nidFront':
-            nidFront.value = image;
+          case 'nicFront':
+            nicFront.value = image;
             break;
-          case 'nidBack':
-            nidBack.value = image;
+          case 'nicBack':
+            nicBack.value = image;
             break;
-          case 'business':
-            businessCertificate.value = image;
+          case 'passport':
+            passport.value = image;
+            break;
+          case 'drivingLicence':
+            drivingLicence.value = image;
+            break;
+          case 'selfie':
+            selfie.value = image;
             break;
         }
       }
@@ -86,40 +138,68 @@ class VerificationsController extends GetxController {
   }
 
   Future<void> submit() async {
-    if (nidFront.value == null || nidBack.value == null || businessCertificate.value == null) {
-      Get.snackbar('Error', 'Please upload all required documents', 
-          snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.redAccent, colorText: Colors.white);
-      return;
+    bool hasNid = nicFront.value != null && nicBack.value != null;
+    bool hasPassport = passport.value != null;
+    bool hasDrivingLicence = drivingLicence.value != null;
+    bool hasSelfie = selfie.value != null;
+
+    if (userRole.value == 'investor') {
+      // Investor specific validation if any, but let's keep it flexible
+      if (!hasNid && !hasPassport && !hasDrivingLicence) {
+        Get.snackbar('Error', 'Please upload NID, Passport, or Driving Licence', 
+            snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.redAccent, colorText: Colors.white);
+        return;
+      }
+    } else {
+      if (!hasNid && !hasPassport && !hasDrivingLicence) {
+        Get.snackbar('Error', 'Please upload NID, Passport, or Driving Licence', 
+            snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.redAccent, colorText: Colors.white);
+        return;
+      }
     }
 
     try {
       isSubmitting.value = true;
       
-      final nidFrontFile = File(nidFront.value!.path);
-      final nidBackFile = File(nidBack.value!.path);
-      final businessFile = File(businessCertificate.value!.path);
+      final Map<String, dynamic> formDataMap = {};
 
-      final nidFrontMime = lookupMimeType(nidFront.value!.path) ?? 'image/jpeg';
-      final nidBackMime = lookupMimeType(nidBack.value!.path) ?? 'image/jpeg';
-      final businessMime = lookupMimeType(businessCertificate.value!.path) ?? 'image/jpeg';
+      if (nicFront.value != null) {
+        formDataMap['nidFront'] = MultipartFile(
+          File(nicFront.value!.path).readAsBytesSync(),
+          filename: nicFront.value!.name,
+          contentType: lookupMimeType(nicFront.value!.path) ?? 'image/jpeg',
+        );
+      }
+      if (nicBack.value != null) {
+        formDataMap['nidBack'] = MultipartFile(
+          File(nicBack.value!.path).readAsBytesSync(),
+          filename: nicBack.value!.name,
+          contentType: lookupMimeType(nicBack.value!.path) ?? 'image/jpeg',
+        );
+      }
+      if (passport.value != null) {
+        formDataMap['passport'] = MultipartFile(
+          File(passport.value!.path).readAsBytesSync(),
+          filename: passport.value!.name,
+          contentType: lookupMimeType(passport.value!.path) ?? 'image/jpeg',
+        );
+      }
+      if (drivingLicence.value != null) {
+        formDataMap['drivingLicence'] = MultipartFile(
+          File(drivingLicence.value!.path).readAsBytesSync(),
+          filename: drivingLicence.value!.name,
+          contentType: lookupMimeType(drivingLicence.value!.path) ?? 'image/jpeg',
+        );
+      }
+      if (selfie.value != null) {
+        formDataMap['selfie'] = MultipartFile(
+          File(selfie.value!.path).readAsBytesSync(),
+          filename: selfie.value!.name,
+          contentType: lookupMimeType(selfie.value!.path) ?? 'image/jpeg',
+        );
+      }
 
-      final formData = FormData({
-        'nidFront': MultipartFile(
-          nidFrontFile.readAsBytesSync(),
-          filename: nidFront.value!.name,
-          contentType: nidFrontMime,
-        ),
-        'nidBack': MultipartFile(
-          nidBackFile.readAsBytesSync(),
-          filename: nidBack.value!.name,
-          contentType: nidBackMime,
-        ),
-        'businessCertificate': MultipartFile(
-          businessFile.readAsBytesSync(),
-          filename: businessCertificate.value!.name,
-          contentType: businessMime,
-        ),
-      });
+      final formData = FormData(formDataMap);
 
       final response = await _provider.submitVerification(formData);
       

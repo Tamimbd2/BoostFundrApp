@@ -33,7 +33,7 @@ class HomeView extends GetView<HomeController> {
                               ],
                             ),
                     ),
-                    _buildSectionHeader('Progress Overview'),
+                    _buildSectionHeader('progress_overview'.tr),
                     const SizedBox(height: 16),
                     Obx(() {
                       if (controller.isLoading.value) {
@@ -52,7 +52,7 @@ class HomeView extends GetView<HomeController> {
                           child: Padding(
                             padding: const EdgeInsets.all(32),
                             child: Text(
-                              'No campaigns yet',
+                              'no_campaigns'.tr,
                               style: TextStyle(
                                 color: Colors.white.withOpacity(0.4),
                                 fontSize: 14,
@@ -94,7 +94,7 @@ class HomeView extends GetView<HomeController> {
                     Obx(
                       () => Flexible(
                         child: Text(
-                          'Hi ${controller.userName.value}',
+                          'hi'.tr + ' ${controller.userName.value}',
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 20,
@@ -106,12 +106,18 @@ class HomeView extends GetView<HomeController> {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    Obx(() => controller.isVerified.value
-                      ? const Padding(
-                          padding: EdgeInsets.only(right: 4),
-                          child: Icon(Icons.verified, color: Color(0xFF22C55E), size: 18),
-                        )
-                      : const SizedBox.shrink()),
+                    Obx(
+                      () => controller.isVerified.value
+                          ? const Padding(
+                              padding: EdgeInsets.only(right: 4),
+                              child: Icon(
+                                Icons.verified,
+                                color: Color(0xFF22C55E),
+                                size: 18,
+                              ),
+                            )
+                          : const SizedBox.shrink(),
+                    ),
                     const Text('👋', style: TextStyle(fontSize: 18)),
                   ],
                 ),
@@ -125,30 +131,6 @@ class HomeView extends GetView<HomeController> {
                       color: Color(0xFF22C55E),
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-          GestureDetector(
-            onTap: () => Get.toNamed(Routes.NOTIFICATIONS),
-            child: Stack(
-              children: [
-                const Icon(
-                  Icons.notifications_none_outlined,
-                  color: Colors.white,
-                  size: 28,
-                ),
-                Positioned(
-                  right: 2,
-                  top: 2,
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: Colors.redAccent,
-                      shape: BoxShape.circle,
                     ),
                   ),
                 ),
@@ -337,81 +319,140 @@ class HomeView extends GetView<HomeController> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: Text(
-                          deal.startupName ?? 'Unnamed',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 17,
-                            fontWeight: FontWeight.w600, // Thinner title
-                            letterSpacing: 0.1,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                        child: Row(
+                          children: [
+                            Flexible(
+                              child: Text(
+                                deal.startupName ?? 'Unnamed',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 17,
+                                  fontWeight: FontWeight.w600,
+                                  letterSpacing: 0.1,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            if (deal.isVerified == true) ...[
+                              const SizedBox(width: 6),
+                              const Icon(
+                                Icons.verified,
+                                color: Color(0xFF22C55E),
+                                size: 16,
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                       const SizedBox(width: 8),
-                      PopupMenuButton<String>(
-                        padding: EdgeInsets.zero,
-                        icon: const Icon(
-                          Icons.more_horiz,
-                          color: Colors.white54,
-                          size: 20,
-                        ),
-                        color: const Color(0xFF1C1C1E),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        onSelected: (value) {
-                          if (value == 'edit') {
-                            Get.toNamed(
-                              Routes.CREATE_CAMPAIGN,
-                              arguments: deal.id,
-                            );
-                          }
-                        },
-                        itemBuilder: (context) => [
-                          PopupMenuItem(
-                            value: 'edit',
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.edit_outlined,
-                                  color: Colors.white,
-                                  size: 18,
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  'Edit Deal',
-                                  style: TextStyle(
-                                    color: Colors.white.withOpacity(0.9),
-                                    fontSize: 14,
+                      if (controller.userRole.value == 'investor' ||
+                          deal.founderId == controller.currentUserId.value)
+                        PopupMenuButton<String>(
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(
+                            Icons.more_horiz,
+                            color: Colors.white54,
+                            size: 20,
+                          ),
+                          color: const Color(0xFF1C1C1E),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          onSelected: (value) {
+                            if (value == 'edit') {
+                              Get.toNamed(
+                                Routes.CREATE_CAMPAIGN,
+                                arguments: deal.id,
+                              );
+                            } else if (value == 'bookmark') {
+                              controller.toggleBookmark(deal);
+                            }
+                          },
+                          itemBuilder: (context) {
+                            final List<PopupMenuEntry<String>> items = [];
+
+                            if (controller.userRole.value == 'investor') {
+                              items.add(
+                                PopupMenuItem(
+                                  value: 'bookmark',
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        deal.isBookmarked == true
+                                            ? Icons.bookmark
+                                            : Icons.bookmark_border_outlined,
+                                        color: Colors.white,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        deal.isBookmarked == true
+                                            ? 'Unsave Deal'
+                                            : 'Save Deal',
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.9),
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                          PopupMenuItem(
-                            value: 'delete',
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.delete_outline,
-                                  color: Colors.redAccent,
-                                  size: 18,
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  'Delete',
-                                  style: TextStyle(
-                                    color: Colors.redAccent.withOpacity(0.9),
-                                    fontSize: 14,
+                              );
+                            }
+
+                            if (controller.userRole.value == 'founder' &&
+                                deal.founderId ==
+                                    controller.currentUserId.value) {
+                              items.addAll([
+                                PopupMenuItem(
+                                  value: 'edit',
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.edit_outlined,
+                                        color: Colors.white,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        'Edit Deal',
+                                        style: TextStyle(
+                                          color: Colors.white.withOpacity(0.9),
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+                                PopupMenuItem(
+                                  value: 'delete',
+                                  child: Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.delete_outline,
+                                        color: Colors.redAccent,
+                                        size: 18,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        'Delete',
+                                        style: TextStyle(
+                                          color: Colors.redAccent.withOpacity(
+                                            0.9,
+                                          ),
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ]);
+                            }
+
+                            return items;
+                          },
+                        ),
                     ],
                   ),
                   const SizedBox(height: 2),
@@ -476,7 +517,7 @@ class HomeView extends GetView<HomeController> {
                         border: Border.all(color: timeColor, width: 1.5),
                       ),
                       child: Text(
-                        '$daysLeft Days Left',
+                        '${daysLeft} ' + 'days_left'.tr,
                         style: TextStyle(
                           color: timeColor,
                           fontSize: 12,
@@ -505,13 +546,20 @@ class HomeView extends GetView<HomeController> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildNavItem(Icons.home_filled, 'Home', isActive: true),
-          _buildNavItem(Icons.campaign_outlined, 'Campaigns'),
-          _buildNavItem(Icons.people_outline, 'Investors'),
-          _buildNavItem(Icons.account_balance_wallet_outlined, 'Wallet'),
+          _buildNavItem(Icons.home_filled, 'home'.tr, isActive: true),
+          Obx(() {
+            final isInvestor = controller.userRole.value == 'investor';
+            return GestureDetector(
+              onTap: () => Get.toNamed(isInvestor ? Routes.SAVE_CAMPAIGN : Routes.MY_CAMPAIGN),
+              child: _buildNavItem(
+                isInvestor ? Icons.bookmark_outline : Icons.campaign_outlined, 
+                isInvestor ? 'save_deal'.tr : 'my_deal'.tr
+              ),
+            );
+          }),
           GestureDetector(
             onTap: () => Get.toNamed(Routes.PROFILE),
-            child: _buildNavItem(Icons.person_outline, 'Profile'),
+            child: _buildNavItem(Icons.person_outline, 'profile'.tr),
           ),
         ],
       ),

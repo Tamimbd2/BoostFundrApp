@@ -64,8 +64,9 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
       if (controller.teamController.text.isNotEmpty) filledFields++;
       if (controller.pitchDeckController.text.isNotEmpty) filledFields++;
       if (controller.founderContactController.text.isNotEmpty) filledFields++;
-      if (controller.selectedImages.isNotEmpty) filledFields++;
       if (controller.taglineController.text.isNotEmpty) filledFields++;
+      if (controller.whatsappNumberController.text.isNotEmpty) filledFields++;
+      if (controller.selectedImages.isNotEmpty) filledFields++;
 
       double progress = (filledFields / totalFields).clamp(0.0, 1.0);
       int percentage = (progress * 100).toInt();
@@ -451,6 +452,7 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
             controller.selectedImages.isEmpty ||
             controller.startupWebsiteController.text.isEmpty ||
             controller.taglineController.text.isEmpty ||
+            controller.whatsappNumberController.text.isEmpty ||
             controller.locationController.text.isEmpty) {
           Get.snackbar('Required', 'Please fill all fields in the Basics section',
               backgroundColor: Colors.redAccent.withOpacity(0.1), colorText: Colors.white);
@@ -556,6 +558,14 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
           hint: 'e.g. San Francisco, CA',
           controller: controller.locationController,
           isRequired: true,
+        ),
+        const SizedBox(height: 24),
+        _buildTextField(
+          label: 'WhatsApp Number',
+          hint: 'e.g. 01564561555',
+          controller: controller.whatsappNumberController,
+          isRequired: true,
+          keyboardType: TextInputType.phone,
         ),
       ],
     );

@@ -13,8 +13,15 @@ class VerificationsProvider extends GetConnect {
 
   Future<Response> getVerificationStatus() async {
     final token = storage.read('token');
+    final user = storage.read('user');
+    final role = user?['role'] ?? 'founder';
+    
+    final endpoint = role == 'investor' 
+        ? ApiConstants.investorVerificationStatus 
+        : ApiConstants.verificationStatus;
+
     return get(
-      ApiConstants.verificationStatus,
+      endpoint,
       headers: {
         if (token != null) 'Authorization': 'Bearer $token',
         'content-type': 'application/json',
@@ -24,8 +31,15 @@ class VerificationsProvider extends GetConnect {
 
   Future<Response> submitVerification(FormData data) async {
     final token = storage.read('token');
+    final user = storage.read('user');
+    final role = user?['role'] ?? 'founder';
+
+    final endpoint = role == 'investor' 
+        ? ApiConstants.submitInvestorVerification 
+        : ApiConstants.submitVerification;
+
     return post(
-      ApiConstants.submitVerification,
+      endpoint,
       data,
       headers: {
         if (token != null) 'Authorization': 'Bearer $token',

@@ -34,6 +34,8 @@ import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/login/bindings/login_binding.dart';
 import '../modules/login/views/login_view.dart';
+import '../modules/mydealdetails/bindings/mydealdetails_binding.dart';
+import '../modules/mydealdetails/views/mydealdetails_view.dart';
 import '../modules/notifications/bindings/notifications_binding.dart';
 import '../modules/notifications/views/notifications_view.dart';
 import '../modules/payment/bindings/payment_binding.dart';
@@ -183,6 +185,11 @@ class AppPages {
       name: _Paths.PAYMENT,
       page: () => const PaymentView(),
       binding: PaymentBinding(),
+    ),
+    GetPage(
+      name: _Paths.MYDEALDETAILS,
+      page: () => const MydealdetailsView(),
+      binding: MydealdetailsBinding(),
     ),
   ];
 }

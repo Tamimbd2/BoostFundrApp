@@ -21,9 +21,9 @@ class SelectLanguageView extends GetView<SelectLanguageController> {
                   const SizedBox(height: 48),
 
                   // Title
-                  const Text(
-                    'Select Language',
-                    style: TextStyle(
+                  Text(
+                    'select_language'.tr,
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
@@ -34,7 +34,7 @@ class SelectLanguageView extends GetView<SelectLanguageController> {
 
                   // Subtitle
                   Text(
-                    'Choose your preferred language.',
+                    'choose_language_subtitle'.tr,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.45),
                       fontSize: 15,
@@ -50,14 +50,14 @@ class SelectLanguageView extends GetView<SelectLanguageController> {
                       children: [
                         _LanguageTile(
                           label: 'English',
-                          isSelected: controller.selectedLanguage.value == 'en',
-                          onTap: () => controller.selectLanguage('en'),
+                          isSelected: controller.selectedLanguage.value == 'en_US',
+                          onTap: () => controller.selectLanguage('en_US'),
                         ),
                         const SizedBox(height: 16),
                         _LanguageTile(
                           label: 'عربي',
-                          isSelected: controller.selectedLanguage.value == 'ar',
-                          onTap: () => controller.selectLanguage('ar'),
+                          isSelected: controller.selectedLanguage.value == 'ar_AR',
+                          onTap: () => controller.selectLanguage('ar_AR'),
                           isRtl: true,
                         ),
                       ],
@@ -89,9 +89,9 @@ class SelectLanguageView extends GetView<SelectLanguageController> {
                       ),
                       elevation: 0,
                     ),
-                    child: const Text(
-                      'Continue',
-                      style: TextStyle(
+                    child: Text(
+                      controller.isFromProfile ? 'save'.tr : 'continue'.tr,
+                      style: const TextStyle(
                         fontSize: 17,
                         fontWeight: FontWeight.w600,
                         letterSpacing: 0.2,

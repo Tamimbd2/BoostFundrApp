@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../data/models/deal_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
@@ -15,10 +16,54 @@ class CreateCampaignController extends GetxController {
   void onInit() {
     super.onInit();
     final args = Get.arguments;
-    if (args != null && args is String) {
-      dealId = args;
-      _fetchDealData(dealId!);
+    if (args != null) {
+      if (args is String) {
+        dealId = args;
+        _fetchDealData(dealId!);
+      } else if (args is DealModel) {
+        dealId = args.id;
+        _populateFieldsFromModel(args);
+      }
     }
+  }
+
+  void _populateFieldsFromModel(DealModel deal) {
+    startupNameController.text = deal.startupName ?? '';
+    taglineController.text = deal.tagline ?? '';
+    startupWebsiteController.text = deal.startupWebsite ?? '';
+    locationController.text = deal.location ?? '';
+    category.value = deal.category ?? 'AI';
+    stage.value = deal.stage ?? 'idea';
+    
+    shortPitchController.text = deal.shortPitch ?? '';
+    problemController.text = deal.problem ?? '';
+    solutionController.text = deal.solution ?? '';
+    businessModelController.text = deal.businessModel ?? '';
+    targetMarketController.text = deal.targetMarket ?? '';
+    whyNowController.text = deal.whyNow ?? '';
+    
+    goalAmountController.text = (deal.raisedGoal ?? '').toString();
+    currencyController.text = deal.raisedCurrency ?? 'AED';
+    deadlineController.text = deal.deadline ?? '';
+    revenueController.text = (deal.revenue ?? '').toString();
+    
+    tractionController.text = deal.traction ?? '';
+    goToMarketController.text = deal.goToMarket ?? '';
+    topCompetitorController.text = deal.topCompetitor ?? '';
+    advantageController.text = deal.advantage ?? '';
+    
+    whatsappNumberController.text = deal.whatsappNumber ?? '';
+    if (deal.qa != null && deal.qa is List && (deal.qa as List).isNotEmpty) {
+      final firstQa = (deal.qa as List)[0];
+      if (firstQa is Map) {
+        faqController.text = firstQa['question'] ?? '';
+      } else {
+        faqController.text = firstQa.toString();
+      }
+    }
+
+    profileCompletionScore.value = deal.profileCompletionScore ?? 0;
+    currentStep.value = deal.currentStep ?? 1;
   }
 
   Future<void> _fetchDealData(String id) async {
@@ -53,6 +98,7 @@ class CreateCampaignController extends GetxController {
           advantageController.text = data['advantage'] ?? '';
           
           founderContactController.text = data['founderContact'] ?? '';
+          whatsappNumberController.text = data['whatsappNumber'] ?? '';
           faqController.text = (data['faq'] is List && (data['faq'] as List).isNotEmpty) 
               ? data['faq'][0] 
               : '';
@@ -70,6 +116,7 @@ class CreateCampaignController extends GetxController {
   final startupNameController = TextEditingController();
   final shortPitchController = TextEditingController();
   final founderContactController = TextEditingController();
+  final whatsappNumberController = TextEditingController();
   final pitchDeckController = TextEditingController();
   final financialDetailsController = TextEditingController();
   final detailedTractionDataController = TextEditingController();
@@ -216,6 +263,7 @@ class CreateCampaignController extends GetxController {
           'category': category.value,
           'stage': stage.value,
           'location': locationController.text,
+          'whatsappNumber': whatsappNumberController.text,
         });
 
         if (selectedImages.isNotEmpty) {
@@ -250,6 +298,7 @@ class CreateCampaignController extends GetxController {
             'category': category.value,
             'stage': stage.value,
             'location': locationController.text,
+            'whatsappNumber': whatsappNumberController.text,
           };
         } else if (currentStep.value == 2) {
           updateData = {
@@ -419,6 +468,7 @@ class CreateCampaignController extends GetxController {
     goToMarketController.dispose();
     topCompetitorController.dispose();
     advantageController.dispose();
+    whatsappNumberController.dispose();
     super.onClose();
   }
 }

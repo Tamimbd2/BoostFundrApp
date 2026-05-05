@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import '../../../routes/app_pages.dart';
 
 class MyInAppBrowser extends InAppBrowser {
   final Function(String) onPageFinished;
@@ -144,7 +145,8 @@ class PaymentController extends GetxController {
                 child: ElevatedButton(
                   onPressed: () {
                     Get.back(); // Close dialog
-                    Get.offAllNamed('/home'); // Back to home
+                    // Use offAllNamed to trigger a full reload of the app state and go to home
+                    Get.offAllNamed(Routes.HOME); 
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF22C55E),

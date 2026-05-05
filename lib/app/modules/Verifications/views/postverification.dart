@@ -28,23 +28,52 @@ class PostVerificationView extends GetView<VerificationsController> {
                   ),
                   const SizedBox(height: 32),
                   
-                  _buildUploadSection(
-                    title: 'NID Front Side',
-                    file: controller.nidFront.value,
-                    onTap: () => controller.pickImage('nidFront'),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildUploadSection(
-                    title: 'NID Back Side',
-                    file: controller.nidBack.value,
-                    onTap: () => controller.pickImage('nidBack'),
-                  ),
-                  const SizedBox(height: 20),
-                  _buildUploadSection(
-                    title: 'Business Certificate',
-                    file: controller.businessCertificate.value,
-                    onTap: () => controller.pickImage('business'),
-                  ),
+                  // Show NID sections only if Passport and Driving Licence are NOT uploaded
+                  if (controller.passport.value == null && controller.drivingLicence.value == null) ...[
+                    _buildUploadSection(
+                      title: 'NID Front Side',
+                      file: controller.nicFront.value,
+                      onTap: () => controller.pickImage('nicFront'),
+                    ),
+                    const SizedBox(height: 20),
+                    _buildUploadSection(
+                      title: 'NID Back Side',
+                      file: controller.nicBack.value,
+                      onTap: () => controller.pickImage('nicBack'),
+                    ),
+                    if (controller.nicFront.value != null || controller.nicBack.value != null)
+                      const SizedBox(height: 20),
+                  ],
+
+                  // Show Passport section only if NID and Driving Licence are NOT uploaded
+                  if (controller.nicFront.value == null && controller.nicBack.value == null && controller.drivingLicence.value == null) ...[
+                    _buildUploadSection(
+                      title: 'Passport',
+                      file: controller.passport.value,
+                      onTap: () => controller.pickImage('passport'),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+
+                  // Show Driving Licence section only if NID and Passport are NOT uploaded
+                  if (controller.nicFront.value == null && controller.nicBack.value == null && controller.passport.value == null) ...[
+                    _buildUploadSection(
+                      title: 'Driving Licence',
+                      file: controller.drivingLicence.value,
+                      onTap: () => controller.pickImage('drivingLicence'),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+
+                  if (controller.userRole.value == 'investor') ...[
+                    const Divider(color: Colors.white10, height: 40),
+                    _buildUploadSection(
+                      title: 'Selfie with ID',
+                      file: controller.selfie.value,
+                      onTap: () => controller.pickImage('selfie'),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
                   
                   const SizedBox(height: 40),
                   _buildSubmitButton(),
@@ -109,19 +138,40 @@ class PostVerificationView extends GetView<VerificationsController> {
                       const Center(
                         child: Icon(Icons.check_circle, color: Color(0xFF22C55E), size: 40),
                       ),
+                      Positioned(
+                        top: 8,
+                        right: 8,
+                        child: GestureDetector(
+                          onTap: () {
+                            if (title.contains('NID Front')) controller.nicFront.value = null;
+                            else if (title.contains('NID Back')) controller.nicBack.value = null;
+                            else if (title.contains('Passport')) controller.passport.value = null;
+                            else if (title.contains('Driving Licence')) controller.drivingLicence.value = null;
+                            else if (title.contains('Selfie')) controller.selfie.value = null;
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            decoration: const BoxDecoration(
+                              color: Colors.redAccent,
+                              shape: BoxShape.circle,
+                            ),
+                            child: const Icon(Icons.close, color: Colors.white, size: 16),
+                          ),
+                        ),
+                      ),
                     ],
                   )
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(
-                        Icons.cloud_upload_outlined,
+                        title.contains('Selfie') ? Icons.face_outlined : Icons.cloud_upload_outlined,
                         color: Colors.white.withOpacity(0.3),
                         size: 40,
                       ),
                       const SizedBox(height: 8),
                       Text(
-                        'Tap to upload',
+                        title.contains('Selfie') ? 'Take a Selfie' : 'Tap to upload',
                         style: TextStyle(
                           color: Colors.white.withOpacity(0.3),
                           fontSize: 14,

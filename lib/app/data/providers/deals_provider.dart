@@ -76,4 +76,27 @@ class DealsProvider extends GetConnect {
       },
     );
   }
+
+  Future<Response> toggleBookmark(String id) async {
+    final token = storage.read('token');
+    return post(
+      '/bookmarks/$id',
+      {},
+      headers: {
+        if (token != null) 'Authorization': 'Bearer $token',
+        'content-type': 'application/json',
+      },
+    );
+  }
+
+  Future<Response> getBookmarks() async {
+    final token = storage.read('token');
+    return get(
+      '/bookmarks',
+      headers: {
+        if (token != null) 'Authorization': 'Bearer $token',
+        'content-type': 'application/json',
+      },
+    );
+  }
 }

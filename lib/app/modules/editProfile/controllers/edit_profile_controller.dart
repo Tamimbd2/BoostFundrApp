@@ -7,11 +7,12 @@ import 'package:mime/mime.dart';
 import 'package:http_parser/http_parser.dart';
 import '../../home/controllers/home_controller.dart';
 import '../../profile/controllers/profile_controller.dart';
+import '../../../data/api_constants.dart';
 
 class EditProfileController extends GetxController {
   final storage = GetStorage();
   
-  // Controllers
+  // Basic Info Controllers
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final emailController = TextEditingController();
@@ -19,11 +20,19 @@ class EditProfileController extends GetxController {
   final locationController = TextEditingController();
   final bioController = TextEditingController();
   final websiteController = TextEditingController();
+  
+  // Founder Info Controllers
   final companyNameController = TextEditingController();
   final companyWebsiteController = TextEditingController();
   final startupDescriptionController = TextEditingController();
   final fundingGoalController = TextEditingController();
   final teamSizeController = TextEditingController();
+  
+  // Investor Info Controllers
+  final minInvestmentController = TextEditingController();
+  final maxInvestmentController = TextEditingController();
+  final interestsController = TextEditingController(); // Comma separated
+  final sectorsController = TextEditingController(); // Comma separated
   
   // Social Links Controllers
   final linkedinController = TextEditingController();
@@ -38,12 +47,16 @@ class EditProfileController extends GetxController {
   final selectedImagePath = ''.obs;
   final isLoading = false.obs;
   final isInitialLoading = true.obs;
+  final userRole = 'founder'.obs;
+  
   final _picker = ImagePicker();
   bool _isPickerActive = false;
 
   @override
   void onInit() {
     super.onInit();
+    final user = storage.read('user');
+    userRole.value = user?['role'] ?? 'founder';
     fetchInitialData();
   }
 
@@ -53,8 +66,12 @@ class EditProfileController extends GetxController {
       final token = storage.read('token');
       if (token == null) return;
 
+      final endpoint = userRole.value == 'investor' 
+          ? ApiConstants.investorProfile 
+          : ApiConstants.founderProfile;
+
       final response = await GetConnect().get(
-        'https://boost-funder.onrender.com/api/v1/users/me/founder-profile',
+        '${ApiConstants.baseUrl}$endpoint',
         headers: {'Authorization': 'Bearer $token'},
       );
 
@@ -72,13 +89,30 @@ class EditProfileController extends GetxController {
             locationController.text = profile['location'] ?? '';
             bioController.text = profile['bio'] ?? '';
             websiteController.text = profile['website'] ?? '';
+            profileImage.value = profile['profileImage'] ?? '';
+            
+            // Founder specific
             companyNameController.text = profile['companyName'] ?? '';
             companyWebsiteController.text = profile['companyWebsite'] ?? '';
             startupDescriptionController.text = profile['startupDescription'] ?? '';
             fundingGoalController.text = (profile['fundingGoal'] ?? '').toString();
             teamSizeController.text = (profile['teamSize'] ?? '').toString();
             selectedStage.value = profile['startupStage'] ?? 'MVP';
-            profileImage.value = profile['profileImage'] ?? '';
+
+            // Investor specific
+            if (userRole.value == 'investor') {
+              if (profile['interests'] != null && profile['interests'] is List) {
+                interestsController.text = (profile['interests'] as List).join(', ');
+              }
+              if (profile['investmentPreferences'] != null) {
+                final prefs = profile['investmentPreferences'];
+                minInvestmentController.text = (prefs['minInvestment'] ?? '').toString();
+                maxInvestmentController.text = (prefs['maxInvestment'] ?? '').toString();
+                if (prefs['sectors'] != null && prefs['sectors'] is List) {
+                  sectorsController.text = (prefs['sectors'] as List).join(', ');
+                }
+              }
+            }
             
             if (profile['socialLinks'] != null) {
               final social = profile['socialLinks'];
@@ -119,23 +153,44 @@ class EditProfileController extends GetxController {
       final token = storage.read('token');
       
       final Map<String, String> fields = {
-        'firstName': firstNameController.text,
-        'lastName': lastNameController.text,
-        'location': locationController.text,
-        'bio': bioController.text,
-        'phone': phoneController.text,
-        'website': websiteController.text,
-        'companyName': companyNameController.text,
-        'companyWebsite': companyWebsiteController.text,
-        'startupStage': selectedStage.value,
-        'startupDescription': startupDescriptionController.text,
-        'fundingGoal': fundingGoalController.text,
-        'teamSize': teamSizeController.text,
-        'socialLinks[linkedin]': linkedinController.text,
-        'socialLinks[twitter]': twitterController.text,
-        'socialLinks[facebook]': facebookController.text,
-        'socialLinks[github]': githubController.text,
+        'firstName': firstNameController.text.trim(),
+        'lastName': lastNameController.text.trim(),
+        'email': emailController.text.trim(),
+        'location': locationController.text.trim(),
+        'bio': bioController.text.trim(),
+        'phone': phoneController.text.trim(),
+        'website': websiteController.text.trim(),
+        'socialLinks[linkedin]': linkedinController.text.trim(),
+        'socialLinks[twitter]': twitterController.text.trim(),
+        'socialLinks[facebook]': facebookController.text.trim(),
+        'socialLinks[github]': githubController.text.trim(),
       };
+
+      if (userRole.value == 'investor') {
+        // Investor specific fields
+        fields['investmentPreferences[minInvestment]'] = minInvestmentController.text.trim();
+        fields['investmentPreferences[maxInvestment]'] = maxInvestmentController.text.trim();
+        
+        // Handle interests array
+        final interests = interestsController.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+        for (int i = 0; i < interests.length; i++) {
+          fields['interests[$i]'] = interests[i];
+        }
+
+        // Handle sectors array
+        final sectors = sectorsController.text.split(',').map((e) => e.trim()).where((e) => e.isNotEmpty).toList();
+        for (int i = 0; i < sectors.length; i++) {
+          fields['investmentPreferences[sectors][$i]'] = sectors[i];
+        }
+      } else {
+        // Founder specific fields
+        fields['companyName'] = companyNameController.text.trim();
+        fields['companyWebsite'] = companyWebsiteController.text.trim();
+        fields['startupStage'] = selectedStage.value;
+        fields['startupDescription'] = startupDescriptionController.text.trim();
+        fields['fundingGoal'] = fundingGoalController.text.trim();
+        fields['teamSize'] = teamSizeController.text.trim();
+      }
 
       final formData = FormData(fields);
 
@@ -152,24 +207,29 @@ class EditProfileController extends GetxController {
         ));
       }
 
+      final endpoint = userRole.value == 'investor' 
+          ? ApiConstants.investorProfile 
+          : ApiConstants.founderProfile;
+
       final response = await GetConnect().put(
-        'https://boost-funder.onrender.com/api/v1/users/me/founder-profile',
+        '${ApiConstants.baseUrl}$endpoint',
         formData,
         headers: {'Authorization': 'Bearer $token'},
       );
 
       if (response.status.isOk) {
-        // Refresh other controllers in real-time
+        // Refresh other controllers
         if (Get.isRegistered<HomeController>()) {
           Get.find<HomeController>().fetchProfile();
         }
         if (Get.isRegistered<ProfileController>()) {
-          Get.find<ProfileController>().fetchFounderProfile();
+          Get.find<ProfileController>().fetchProfile();
         }
 
         _showSuccessDialog();
       } else {
-        Get.snackbar('Error', response.body?['message'] ?? 'Failed to update profile',
+        final msg = response.body?['message'] ?? 'Failed to update profile';
+        Get.snackbar('Error', msg,
             backgroundColor: Colors.redAccent.withOpacity(0.1),
             colorText: Colors.white);
       }
@@ -238,6 +298,10 @@ class EditProfileController extends GetxController {
     startupDescriptionController.dispose();
     fundingGoalController.dispose();
     teamSizeController.dispose();
+    minInvestmentController.dispose();
+    maxInvestmentController.dispose();
+    interestsController.dispose();
+    sectorsController.dispose();
     linkedinController.dispose();
     twitterController.dispose();
     facebookController.dispose();
