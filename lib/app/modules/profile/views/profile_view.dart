@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/profile_controller.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../routes/app_pages.dart';
+import '../../../widgets/gradient_background.dart';
 
 class ProfileView extends GetView<ProfileController> {
   const ProfileView({super.key});
@@ -11,9 +12,10 @@ class ProfileView extends GetView<ProfileController> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
+      body: GradientBackground(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
           CustomAppBar(title: 'profile'.tr),
           Expanded(
             child: SingleChildScrollView(
@@ -51,18 +53,6 @@ class ProfileView extends GetView<ProfileController> {
                             _buildDivider(),
                           ],
                           _buildMenuItem(
-                            Icons.account_balance_wallet_outlined,
-                            'wallet'.tr,
-                            onTap: () => Get.toNamed(Routes.WALLET),
-                          ),
-                          _buildDivider(),
-                          _buildMenuItem(
-                            Icons.account_balance_outlined,
-                            'bank_details'.tr,
-                            onTap: () => Get.toNamed(Routes.BANK_DETAILS),
-                          ),
-                          _buildDivider(),
-                          _buildMenuItem(
                             Icons.verified_outlined,
                             'verification'.tr,
                             onTap: () => Get.toNamed(Routes.VERIFICATIONS),
@@ -83,12 +73,6 @@ class ProfileView extends GetView<ProfileController> {
                     child: Column(
                       children: [
                         _buildMenuItem(
-                          Icons.settings_outlined,
-                          'settings'.tr,
-                          onTap: () => Get.toNamed(Routes.SETTING),
-                        ),
-                        _buildDivider(),
-                        _buildMenuItem(
                           Icons.language_outlined,
                           'language'.tr,
                           onTap: () => Get.toNamed(Routes.SELECT_LANGUAGE, arguments: 'profile'),
@@ -107,9 +91,9 @@ class ProfileView extends GetView<ProfileController> {
                         ),
                         _buildDivider(),
                         _buildMenuItem(
-                          Icons.info_outline,
-                          'platform_guidelines'.tr,
-                          onTap: () => Get.toNamed(Routes.PLATFORM_GUIDLINES),
+                          Icons.description_outlined,
+                          'terms_and_conditions'.tr,
+                          onTap: () => Get.toNamed(Routes.TERMSDETAILS),
                         ),
                         _buildDivider(),
                         _buildMenuItem(
@@ -127,6 +111,7 @@ class ProfileView extends GetView<ProfileController> {
             ),
           ),
         ],
+        ),
       ),
     );
   }
@@ -139,12 +124,12 @@ class ProfileView extends GetView<ProfileController> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
           colors: [
-            const Color(0xFF0F2D19).withOpacity(0.8),
-            const Color(0xFF07140B).withOpacity(0.9),
+            const Color(0xFF0F2D19).withValues(alpha: 0.8),
+            const Color(0xFF07140B).withValues(alpha: 0.9),
           ],
         ),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFF22C55E).withOpacity(0.2)),
+        border: Border.all(color: const Color(0xFF22C55E).withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -208,7 +193,7 @@ class ProfileView extends GetView<ProfileController> {
                   () => Text(
                     controller.userEmail.value,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.6),
+                      color: Colors.white.withValues(alpha: 0.6),
                       fontSize: 14,
                     ),
                   ),
@@ -265,7 +250,7 @@ class ProfileView extends GetView<ProfileController> {
             const Spacer(),
             Icon(
               Icons.arrow_forward_ios,
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
               size: 16,
             ),
           ],

@@ -14,4 +14,7 @@ class ApiConstants {
   static const String submitVerification = '/users/verifications/founder';
   static const String submitInvestorVerification = '/users/verifications/investor';
   static const String myDeals = '/deals/founder/me';
+  static const String bookmarks = '/bookmarks';
+  static const String forgotPassword = '/auth/forgot-password';
+  static const String resetPassword = '/auth/reset-password';
 }

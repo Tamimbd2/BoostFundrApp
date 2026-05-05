@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -199,7 +198,7 @@ class MydealdetailsView extends GetView<MydealdetailsController> {
               Image.network(
                 img,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _imagePlaceholder(neonGreen),
+                errorBuilder: (context, error, stackTrace) => _imagePlaceholder(neonGreen),
               )
             else
               _imagePlaceholder(neonGreen),
@@ -222,7 +221,7 @@ class MydealdetailsView extends GetView<MydealdetailsController> {
     color: const Color(0xFF0B0F14),
     child: Icon(
       Icons.rocket_launch_outlined,
-      color: neonGreen.withOpacity(0.2),
+      color: neonGreen.withValues(alpha: 0.2),
       size: 48,
     ),
   );
@@ -248,9 +247,9 @@ class MydealdetailsView extends GetView<MydealdetailsController> {
   Widget _chip(String label, Color color) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
     decoration: BoxDecoration(
-      color: color.withOpacity(0.1),
+      color: color.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: color.withOpacity(0.3)),
+      border: Border.all(color: color.withValues(alpha: 0.3)),
     ),
     child: Text(
       label,
@@ -276,14 +275,14 @@ class MydealdetailsView extends GetView<MydealdetailsController> {
           children: [
             Icon(
               Icons.location_on_outlined,
-              color: Colors.white.withOpacity(0.3),
+              color: Colors.white.withValues(alpha: 0.3),
               size: 14,
             ),
             const SizedBox(width: 4),
             Text(
               controller.location,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
                 fontSize: 12,
               ),
             ),
@@ -408,7 +407,7 @@ class MydealdetailsView extends GetView<MydealdetailsController> {
     return Container(
       padding: const EdgeInsets.all(8),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.03),
+        color: Colors.white.withValues(alpha: 0.03),
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
@@ -429,7 +428,7 @@ class MydealdetailsView extends GetView<MydealdetailsController> {
           const SizedBox(height: 2),
           Text(
             label,
-            style: TextStyle(color: Colors.white.withOpacity(0.3), fontSize: 9),
+            style: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 9),
             textAlign: TextAlign.center,
           ),
         ],
@@ -467,7 +466,7 @@ class MydealdetailsView extends GetView<MydealdetailsController> {
               const Spacer(),
               Icon(
                 Icons.shield_outlined,
-                color: color.withOpacity(0.5),
+                color: color.withValues(alpha: 0.5),
                 size: 32,
               ),
             ],
@@ -487,7 +486,7 @@ class MydealdetailsView extends GetView<MydealdetailsController> {
           Text(
             content,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 13,
               height: 1.6,
             ),
@@ -506,14 +505,14 @@ class MydealdetailsView extends GetView<MydealdetailsController> {
             (t) => Container(
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
               decoration: BoxDecoration(
-                color: neonGreen.withOpacity(0.05),
+                color: neonGreen.withValues(alpha: 0.05),
                 borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: neonGreen.withOpacity(0.2)),
+                border: Border.all(color: neonGreen.withValues(alpha: 0.2)),
               ),
               child: Text(
                 t,
                 style: TextStyle(
-                  color: neonGreen.withOpacity(0.8),
+                  color: neonGreen.withValues(alpha: 0.8),
                   fontSize: 11,
                 ),
               ),
@@ -531,7 +530,7 @@ class MydealdetailsView extends GetView<MydealdetailsController> {
               margin: const EdgeInsets.only(bottom: 8),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.03),
+                color: Colors.white.withValues(alpha: 0.03),
                 borderRadius: BorderRadius.circular(10),
               ),
               child: Row(
@@ -604,12 +603,12 @@ class MydealdetailsView extends GetView<MydealdetailsController> {
         icon: Icon(icon, size: 18),
         label: Text(label),
         style: ElevatedButton.styleFrom(
-          backgroundColor: color.withOpacity(0.1),
+          backgroundColor: color.withValues(alpha: 0.1),
           foregroundColor: color,
           padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
-            side: BorderSide(color: color.withOpacity(0.5)),
+            side: BorderSide(color: color.withValues(alpha: 0.5)),
           ),
         ),
       ),
@@ -626,7 +625,7 @@ class MydealdetailsView extends GetView<MydealdetailsController> {
           Text(
             'Campaign Ends',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.5),
+              color: Colors.white.withValues(alpha: 0.5),
               fontSize: 14,
             ),
           ),
@@ -645,7 +644,7 @@ class MydealdetailsView extends GetView<MydealdetailsController> {
     decoration: BoxDecoration(
       color: const Color(0xFF0D1117),
       borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: Colors.white.withOpacity(0.05)),
+      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
     ),
     child: child,
   );

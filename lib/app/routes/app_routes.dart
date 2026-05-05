@@ -29,6 +29,11 @@ abstract class Routes {
   static const VERIFICATIONS = _Paths.VERIFICATIONS;
   static const PAYMENT = _Paths.PAYMENT;
   static const MYDEALDETAILS = _Paths.MYDEALDETAILS;
+  static const FORGOT_PASSWORD = _Paths.FORGOT_PASSWORD;
+  static const VERIFYOTP = _Paths.VERIFYOTP;
+  static const CHANGE_PASSWORD = _Paths.CHANGE_PASSWORD;
+  static const TERMS_AND_CONDITIONS = _Paths.TERMS_AND_CONDITIONS;
+  static const TERMSDETAILS = _Paths.TERMSDETAILS;
 }
 
 abstract class _Paths {
@@ -59,4 +64,9 @@ abstract class _Paths {
   static const VERIFICATIONS = '/verifications';
   static const PAYMENT = '/payment';
   static const MYDEALDETAILS = '/mydealdetails';
+  static const FORGOT_PASSWORD = '/forgot-password';
+  static const VERIFYOTP = '/verifyotp';
+  static const CHANGE_PASSWORD = '/change-password';
+  static const TERMS_AND_CONDITIONS = '/terms-and-conditions';
+  static const TERMSDETAILS = '/termsdetails';
 }

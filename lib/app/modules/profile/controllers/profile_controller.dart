@@ -121,7 +121,7 @@ class ProfileController extends GetxController {
                 'Are you sure you want to logout?',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
+                  color: Colors.white.withValues(alpha: 0.6),
                   fontSize: 15,
                 ),
               ),
@@ -136,7 +136,7 @@ class ProfileController extends GetxController {
                       ),
                       child: Text(
                         'Cancel',
-                        style: TextStyle(color: Colors.white.withOpacity(0.6)),
+                        style: TextStyle(color: Colors.white.withValues(alpha: 0.6)),
                       ),
                     ),
                   ),

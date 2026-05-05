@@ -85,9 +85,9 @@ class VerificationsView extends GetView<VerificationsController> {
             Container(
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: const Color(0xFF22C55E).withOpacity(0.1),
+                color: const Color(0xFF22C55E).withValues(alpha: 0.1),
                 shape: BoxShape.circle,
-                border: Border.all(color: const Color(0xFF22C55E).withOpacity(0.2), width: 2),
+                border: Border.all(color: const Color(0xFF22C55E).withValues(alpha: 0.2), width: 2),
               ),
               child: const Icon(
                 Icons.verified_user,
@@ -109,7 +109,7 @@ class VerificationsView extends GetView<VerificationsController> {
               'Congratulations! Your founder identity has been verified. You now have full access to create campaigns and raise funds.',
               textAlign: TextAlign.center,
               style: TextStyle(
-                color: Colors.white.withOpacity(0.6),
+                color: Colors.white.withValues(alpha: 0.6),
                 fontSize: 16,
                 height: 1.5,
               ),
@@ -174,14 +174,14 @@ class VerificationsView extends GetView<VerificationsController> {
       decoration: BoxDecoration(
         gradient: LinearGradient(
           colors: [
-            statusColor.withOpacity(0.1),
+            statusColor.withValues(alpha: 0.1),
             const Color(0xFF111111),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: statusColor.withOpacity(0.2)),
+        border: Border.all(color: statusColor.withValues(alpha: 0.2)),
       ),
       child: Row(
         children: [
@@ -231,7 +231,7 @@ class VerificationsView extends GetView<VerificationsController> {
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.05),
+              color: Colors.white.withValues(alpha: 0.05),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Icon(icon, color: Colors.white, size: 24),
@@ -253,7 +253,7 @@ class VerificationsView extends GetView<VerificationsController> {
                 Text(
                   subtitle,
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.5),
+                    color: Colors.white.withValues(alpha: 0.5),
                     fontSize: 12,
                   ),
                 ),
@@ -263,9 +263,9 @@ class VerificationsView extends GetView<VerificationsController> {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: statusColor.withOpacity(0.1),
+              color: statusColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(20),
-              border: Border.all(color: statusColor.withOpacity(0.3)),
+              border: Border.all(color: statusColor.withValues(alpha: 0.3)),
             ),
             child: Text(
               status,
@@ -285,7 +285,7 @@ class VerificationsView extends GetView<VerificationsController> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: const Color(0xFF1E1E1E).withOpacity(0.5),
+        color: const Color(0xFF1E1E1E).withValues(alpha: 0.5),
         borderRadius: BorderRadius.circular(16),
       ),
       child: Row(

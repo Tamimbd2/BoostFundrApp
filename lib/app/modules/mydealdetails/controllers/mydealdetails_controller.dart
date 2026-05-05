@@ -1,12 +1,7 @@
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-import 'package:http/http.dart' as http;
 import '../../../data/models/deal_model.dart';
 
 class MydealdetailsController extends GetxController {
-  final _storage = GetStorage();
 
   final isLoading = true.obs;
   final hasError = false.obs;

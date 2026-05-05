@@ -63,10 +63,12 @@ class HomeController extends GetxController {
           if (user['plan'] != null) storedUser['plan'] = user['plan'];
           if (user['accessLevel'] != null) storedUser['accessLevel'] = user['accessLevel'];
 
-          if (user['firstName'] != null)
+          if (user['firstName'] != null) {
             storedUser['firstName'] = user['firstName'];
-          if (user['lastName'] != null)
+          }
+          if (user['lastName'] != null) {
             storedUser['lastName'] = user['lastName'];
+          }
           storage.write('user', storedUser);
         }
       }

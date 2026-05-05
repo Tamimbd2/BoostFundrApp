@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
-import 'package:http_parser/http_parser.dart';
 import '../../home/controllers/home_controller.dart';
 import '../../profile/controllers/profile_controller.dart';
 import '../../../data/api_constants.dart';
@@ -230,12 +229,12 @@ class EditProfileController extends GetxController {
       } else {
         final msg = response.body?['message'] ?? 'Failed to update profile';
         Get.snackbar('Error', msg,
-            backgroundColor: Colors.redAccent.withOpacity(0.1),
+            backgroundColor: Colors.redAccent.withValues(alpha: 0.1),
             colorText: Colors.white);
       }
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred',
-          backgroundColor: Colors.redAccent.withOpacity(0.1),
+          backgroundColor: Colors.redAccent.withValues(alpha: 0.1),
           colorText: Colors.white);
     } finally {
       isLoading.value = false;
@@ -255,7 +254,7 @@ class EditProfileController extends GetxController {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF22C55E).withOpacity(0.1),
+                  color: const Color(0xFF22C55E).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.check_circle, color: Color(0xFF22C55E), size: 60),
@@ -269,7 +268,7 @@ class EditProfileController extends GetxController {
               Text(
                 'Your profile information has been saved successfully.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 14),
               ),
             ],
           ),

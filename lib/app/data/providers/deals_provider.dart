@@ -80,7 +80,7 @@ class DealsProvider extends GetConnect {
   Future<Response> toggleBookmark(String id) async {
     final token = storage.read('token');
     return post(
-      '/bookmarks/$id',
+      '${ApiConstants.bookmarks}/$id',
       {},
       headers: {
         if (token != null) 'Authorization': 'Bearer $token',

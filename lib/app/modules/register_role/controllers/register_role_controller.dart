@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import '../../../routes/app_pages.dart';
 
 class RegisterRoleController extends GetxController {
-  final selectedRole = 'Guest'.obs;
+  final selectedRole = 'Investor'.obs;
 
   void selectRole(String role) {
     selectedRole.value = role;

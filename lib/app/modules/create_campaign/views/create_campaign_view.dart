@@ -1,6 +1,5 @@
+import 'package:boost_fundr/export.dart';
 import 'dart:io';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 import '../controllers/create_campaign_controller.dart';
 
@@ -9,38 +8,41 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
-          onPressed: () => Get.back(),
-        ),
-        title: const Text(
-          'Create Deal',
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
+    return SplashBackground(
+      child: Scaffold(
+        backgroundColor: Colors.transparent,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 20),
+            onPressed: () => Get.back(),
+          ),
+          title: const Text(
+            'Create Deal',
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            _buildProfileScoreBar(),
-            const SizedBox(height: 32),
-            _buildStepper(),
-            const SizedBox(height: 32),
-            Obx(() => _buildStepContent()),
-            const SizedBox(height: 32),
-            _buildBottomButtons(),
-            const SizedBox(height: 40),
-          ],
+        body: SingleChildScrollView(
+          physics: const BouncingScrollPhysics(),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildProfileScoreBar(),
+              const SizedBox(height: 32),
+              _buildStepper(),
+              const SizedBox(height: 32),
+              Obx(() => _buildStepContent()),
+              const SizedBox(height: 40),
+              _buildBottomButtons(),
+              const SizedBox(height: 40),
+            ],
+          ),
         ),
       ),
     );
@@ -79,13 +81,8 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
           ? controller.profileCompletionScore.value / 100.0 
           : progress;
 
-      return Container(
+      return GlassCard(
         padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: const Color(0xFF111111),
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: const Color(0xFF1E1E1E)),
-        ),
         child: Column(
           children: [
             Row(
@@ -103,15 +100,16 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                   decoration: BoxDecoration(
-                    color: const Color(0xFF22C55E).withOpacity(0.1),
+                    color: ColorConst.kPrimaryColor.withValues(alpha: 0.15),
                     borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: ColorConst.kPrimaryColor.withValues(alpha: 0.3)),
                   ),
                   child: Text(
                     "$displayPercentage% Profile Score",
-                    style: const TextStyle(
-                      color: Color(0xFF22C55E),
+                    style: TextStyle(
+                      color: ColorConst.kPrimaryColor,
                       fontSize: 12,
                       fontWeight: FontWeight.bold,
                     ),
@@ -124,9 +122,9 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
               borderRadius: BorderRadius.circular(10),
               child: LinearProgressIndicator(
                 value: displayProgress,
-                backgroundColor: const Color(0xFF1E1E1E),
-                valueColor: const AlwaysStoppedAnimation<Color>(Color(0xFF22C55E)),
-                minHeight: 8,
+                backgroundColor: Colors.white.withValues(alpha: 0.05),
+                valueColor: AlwaysStoppedAnimation<Color>(ColorConst.kPrimaryColor),
+                minHeight: 6,
               ),
             ),
           ],
@@ -156,8 +154,6 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
           return Expanded(
             child: GestureDetector(
               onTap: () {
-                // Allow navigation to any step that is already completed or the current one
-                // Or simply any step to allow free navigation (but validation usually blocks forward)
                 if (id < controller.currentStep.value) {
                   controller.currentStep.value = id;
                 }
@@ -167,62 +163,66 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
                 children: [
                   Row(
                     children: [
-                      if (id != 1)
-                        Expanded(
-                          child: Container(
-                            height: 2,
-                            color: isCompleted
-                                ? const Color(0xFF22C55E)
-                                : const Color(0xFF1E1E1E),
-                          ),
-                        ),
+                      Expanded(
+                        child: id == 1
+                            ? const SizedBox.shrink()
+                            : Container(
+                                height: 2,
+                                color: isCompleted || isActive
+                                    ? ColorConst.kPrimaryColor
+                                    : Colors.white.withValues(alpha: 0.05),
+                              ),
+                      ),
                       Container(
-                        width: 40,
-                        height: 40,
+                        width: 32,
+                        height: 32,
                         decoration: BoxDecoration(
-                          color: isActive || isCompleted
-                              ? Colors.transparent
-                              : const Color(0xFF1E1E1E),
+                          color: isCompleted
+                              ? ColorConst.kPrimaryColor
+                              : isActive
+                                  ? Colors.transparent
+                                  : Colors.white.withValues(alpha: 0.05),
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: isActive || isCompleted
-                                ? const Color(0xFF22C55E)
+                            color: isCompleted || isActive
+                                ? ColorConst.kPrimaryColor
                                 : Colors.transparent,
-                            width: 2,
+                            width: 1.5,
                           ),
                         ),
                         child: Center(
                           child: isCompleted
-                              ? const Icon(Icons.check,
-                                  color: Color(0xFF22C55E), size: 20)
+                              ? const Icon(Icons.check, color: Colors.white, size: 16)
                               : Text(
                                   "$id",
                                   style: TextStyle(
-                                    color: isActive
-                                        ? const Color(0xFF22C55E)
-                                        : Colors.white38,
+                                    color: isActive ? ColorConst.kPrimaryColor : Colors.white38,
+                                    fontSize: 12,
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                         ),
                       ),
-                      if (id != 5)
-                        Expanded(
-                          child: Container(
-                            height: 2,
-                            color: isCompleted
-                                ? const Color(0xFF22C55E)
-                                : const Color(0xFF1E1E1E),
-                          ),
-                        ),
+                      Expanded(
+                        child: id == 5
+                            ? const SizedBox.shrink()
+                            : Container(
+                                height: 2,
+                                color: isCompleted
+                                    ? ColorConst.kPrimaryColor
+                                    : Colors.white.withValues(alpha: 0.05),
+                              ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 8),
                   Text(
                     title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                     style: TextStyle(
-                      color: isActive ? const Color(0xFF22C55E) : Colors.white38,
-                      fontSize: 12,
+                      color: isActive ? ColorConst.kPrimaryColor : Colors.white38,
+                      fontSize: 10,
                       fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
                     ),
                   ),
@@ -455,7 +455,7 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
             controller.whatsappNumberController.text.isEmpty ||
             controller.locationController.text.isEmpty) {
           Get.snackbar('Required', 'Please fill all fields in the Basics section',
-              backgroundColor: Colors.redAccent.withOpacity(0.1), colorText: Colors.white);
+              backgroundColor: Colors.redAccent.withValues(alpha: 0.1), colorText: Colors.white);
           return false;
         }
         return true;
@@ -467,7 +467,7 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
             controller.whyNowController.text.isEmpty ||
             controller.businessModelController.text.isEmpty) {
           Get.snackbar('Required', 'Please fill all fields in the Story section',
-              backgroundColor: Colors.redAccent.withOpacity(0.1), colorText: Colors.white);
+              backgroundColor: Colors.redAccent.withValues(alpha: 0.1), colorText: Colors.white);
           return false;
         }
         return true;
@@ -478,7 +478,7 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
             controller.deadlineController.text.isEmpty ||
             controller.useOfFundsController.text.isEmpty) {
           Get.snackbar('Required', 'Please fill all fields in the Funding section',
-              backgroundColor: Colors.redAccent.withOpacity(0.1), colorText: Colors.white);
+              backgroundColor: Colors.redAccent.withValues(alpha: 0.1), colorText: Colors.white);
           return false;
         }
         return true;
@@ -489,7 +489,7 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
             controller.advantageController.text.isEmpty ||
             controller.teamController.text.isEmpty) {
           Get.snackbar('Required', 'Please fill all fields in the Execution section',
-              backgroundColor: Colors.redAccent.withOpacity(0.1), colorText: Colors.white);
+              backgroundColor: Colors.redAccent.withValues(alpha: 0.1), colorText: Colors.white);
           return false;
         }
         return true;
@@ -497,7 +497,7 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
         if (controller.pitchDeckFile.value == null ||
             controller.founderContactController.text.isEmpty) {
           Get.snackbar('Required', 'Pitch Deck and Founder Contact are mandatory',
-              backgroundColor: Colors.redAccent.withOpacity(0.1), colorText: Colors.white);
+              backgroundColor: Colors.redAccent.withValues(alpha: 0.1), colorText: Colors.white);
           return false;
         }
         return true;
@@ -633,14 +633,14 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         RichText(
-          text: const TextSpan(
+          text: TextSpan(
             text: 'Startup Logo',
             style: TextStyle(
-              color: Colors.white70,
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
-            children: [
+            children: const [
               TextSpan(
                 text: ' *',
                 style: TextStyle(color: Colors.redAccent),
@@ -650,41 +650,52 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
         ),
         const SizedBox(height: 4),
         Text(
-          'Upload your logo',
-          style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12),
+          'Upload your startup logo',
+          style: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 12),
         ),
         const SizedBox(height: 12),
         Obx(
           () => GestureDetector(
-            onTap: () => controller.pickImages(), // Reusing pickImages for simplicity, but user might want specific logo pick
-            child: Container(
+            onTap: () => controller.pickImages(), 
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 300),
               width: double.infinity,
-              height: 120,
+              height: 140,
               decoration: BoxDecoration(
-                color: const Color(0xFF111111),
-                borderRadius: BorderRadius.circular(16),
+                color: Colors.white.withValues(alpha: 0.03),
+                borderRadius: BorderRadius.circular(20),
                 border: Border.all(
-                  color: const Color(0xFF1E1E1E),
+                  color: controller.selectedImages.isNotEmpty 
+                      ? ColorConst.kPrimaryColor.withValues(alpha: 0.5)
+                      : Colors.white.withValues(alpha: 0.08),
+                  width: 1,
                 ),
               ),
               child: controller.selectedImages.isEmpty
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Icon(
-                          Icons.cloud_upload_outlined,
-                          color: Color(0xFF22C55E),
-                          size: 32,
+                        Container(
+                          padding: const EdgeInsets.all(12),
+                          decoration: BoxDecoration(
+                            color: ColorConst.kPrimaryColor.withValues(alpha: 0.1),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            Icons.cloud_upload_outlined,
+                            color: ColorConst.kPrimaryColor,
+                            size: 28,
+                          ),
                         ),
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         RichText(
-                          text: const TextSpan(
+                          text: TextSpan(
                             text: 'Drag & drop or ',
-                            style: TextStyle(color: Colors.white38, fontSize: 13),
+                            style: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 13),
                             children: [
                               TextSpan(
                                 text: 'click to browse',
-                                style: TextStyle(color: Color(0xFF22C55E)),
+                                style: TextStyle(color: ColorConst.kPrimaryColor, fontWeight: FontWeight.w600),
                               ),
                             ],
                           ),
@@ -692,10 +703,30 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
                       ],
                     )
                   : ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: Image.file(
-                        File(controller.selectedImages[0].path),
-                        fit: BoxFit.contain,
+                      borderRadius: BorderRadius.circular(20),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          Image.file(
+                            File(controller.selectedImages[0].path),
+                            fit: BoxFit.contain,
+                          ),
+                          Positioned(
+                            top: 8,
+                            right: 8,
+                            child: GestureDetector(
+                              onTap: () => controller.selectedImages.clear(),
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: Colors.black54,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.close, color: Colors.white, size: 14),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
             ),
@@ -768,100 +799,6 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
   }
 
 
-  Widget _buildImagePickerSection({bool isRequired = false}) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        RichText(
-          text: TextSpan(
-            text: 'Campaign Media',
-            style: const TextStyle(
-              color: Colors.white70,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-            children: isRequired
-                ? [
-                    const TextSpan(
-                      text: ' *',
-                      style: TextStyle(color: Colors.redAccent),
-                    )
-                  ]
-                : [],
-          ),
-        ),
-        const SizedBox(height: 12),
-        Obx(
-          () => SizedBox(
-            height: 100,
-            child: ListView.separated(
-              scrollDirection: Axis.horizontal,
-              itemCount: controller.selectedImages.length + 1,
-              separatorBuilder: (_, __) => const SizedBox(width: 12),
-              itemBuilder: (context, index) {
-                if (index == controller.selectedImages.length) {
-                  return GestureDetector(
-                    onTap: () => controller.pickImages(),
-                    child: Container(
-                      width: 100,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF111111),
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: const Color(0xFF22C55E).withOpacity(0.3),
-                        ),
-                      ),
-                      child: const Icon(
-                        Icons.add_a_photo_outlined,
-                        color: Color(0xFF22C55E),
-                        size: 28,
-                      ),
-                    ),
-                  );
-                }
-
-                return Stack(
-                  children: [
-                    Container(
-                      width: 100,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        image: DecorationImage(
-                          image: FileImage(
-                            File(controller.selectedImages[index].path),
-                          ),
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 4,
-                      right: 4,
-                      child: GestureDetector(
-                        onTap: () => controller.removeImage(index),
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          decoration: const BoxDecoration(
-                            color: Colors.black54,
-                            shape: BoxShape.circle,
-                          ),
-                          child: const Icon(
-                            Icons.close,
-                            color: Colors.white,
-                            size: 14,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ),
-        ),
-      ],
-    );
-  }
 
   Widget _buildTextField({
     required String label,
@@ -879,8 +816,8 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
         RichText(
           text: TextSpan(
             text: label,
-            style: const TextStyle(
-              color: Colors.white70,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
@@ -901,23 +838,23 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
           keyboardType: keyboardType,
           readOnly: readOnly,
           onTap: onTap,
-          style: const TextStyle(color: Colors.white),
+          style: const TextStyle(color: Colors.white, fontSize: 14),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.2)),
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.15), fontSize: 14),
             filled: true,
-            fillColor: const Color(0xFF111111),
+            fillColor: Colors.white.withValues(alpha: 0.03),
             contentPadding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 16,
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF1E1E1E)),
+              borderSide: BorderSide(color: Colors.white.withValues(alpha: 0.08)),
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: const BorderSide(color: Color(0xFF22C55E)),
+              borderSide: const BorderSide(color: ColorConst.kPrimaryColor, width: 1.5),
             ),
           ),
         ),
@@ -938,8 +875,8 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
         RichText(
           text: TextSpan(
             text: label,
-            style: const TextStyle(
-              color: Colors.white70,
+            style: TextStyle(
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 14,
               fontWeight: FontWeight.w500,
             ),
@@ -957,16 +894,17 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
         Container(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           decoration: BoxDecoration(
-            color: const Color(0xFF111111),
+            color: Colors.white.withValues(alpha: 0.03),
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: const Color(0xFF1E1E1E)),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
           ),
           child: DropdownButtonHideUnderline(
             child: DropdownButton<String>(
               value: value,
-              dropdownColor: const Color(0xFF111111),
+              dropdownColor: ColorConst.kGray600,
               isExpanded: true,
-              style: const TextStyle(color: Colors.white),
+              icon: const Icon(Icons.keyboard_arrow_down, color: Colors.white38),
+              style: const TextStyle(color: Colors.white, fontSize: 14),
               items: items
                   .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                   .toList(),

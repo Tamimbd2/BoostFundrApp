@@ -16,34 +16,41 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
+        centerTitle: true,
+        title: const Text(
+          'Subscription',
+          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
           onPressed: () => Get.back(),
         ),
       ),
       body: Obx(() {
-        if (controller.isLoading.value) {
-          return const Center(
-            child: CircularProgressIndicator(color: neonGreen),
-          );
-        }
-
-        if (controller.plans.isEmpty) {
+        if (controller.userRole.value == 'founder') {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(Icons.subscriptions_outlined, color: Colors.white.withOpacity(0.2), size: 64),
-                const SizedBox(height: 16),
-                Text('No subscription plans available', style: TextStyle(color: Colors.white.withOpacity(0.5))),
+                Icon(Icons.rocket_launch_outlined, color: neonGreen.withValues(alpha: 0.5), size: 80),
                 const SizedBox(height: 24),
-                ElevatedButton(
-                  onPressed: () => controller.fetchPlans(),
-                  style: ElevatedButton.styleFrom(backgroundColor: neonGreen.withOpacity(0.1), foregroundColor: neonGreen),
-                  child: const Text('Retry'),
+                const Text(
+                  'Coming Soon',
+                  style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Founder subscription plans are in development.',
+                  style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 14),
                 ),
               ],
             ),
+          );
+        }
+
+        if (controller.isLoading.value) {
+          return const Center(
+            child: CircularProgressIndicator(color: neonGreen),
           );
         }
 
@@ -53,26 +60,74 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
           child: Column(
             children: [
               const SizedBox(height: 10),
+              
+              // Current Plan Header
+              if (controller.currentPlan.value.isNotEmpty)
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 32),
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [neonGreen.withValues(alpha: 0.15), Colors.transparent],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: neonGreen.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: neonGreen.withValues(alpha: 0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.star, color: neonGreen, size: 24),
+                      ),
+                      const SizedBox(width: 16),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Current Plan',
+                            style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 12),
+                          ),
+                          Text(
+                            controller.currentPlan.value.toUpperCase(),
+                            style: const TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+
               const Text(
-                'Choose Your Plan',
+                'Available Plans',
                 style: TextStyle(
                   color: Colors.white,
-                  fontSize: 28,
+                  fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Text(
-                'Unlock exclusive startup deals and investment\nopportunities',
-                textAlign: TextAlign.center,
+                'Choose a plan to upgrade your account',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.5),
+                  color: Colors.white.withValues(alpha: 0.5),
                   fontSize: 14,
-                  height: 1.5,
                 ),
               ),
-              const SizedBox(height: 40),
+              const SizedBox(height: 32),
               
+              if (controller.plans.isEmpty)
+                Padding(
+                  padding: const EdgeInsets.only(top: 40),
+                  child: Text('No other plans available', style: TextStyle(color: Colors.white.withValues(alpha: 0.3))),
+                ),
+
               ...controller.plans.map((plan) {
                 final isPro = plan.name.toLowerCase() == 'pro';
                 final isElite = plan.name.toLowerCase() == 'elite';
@@ -87,7 +142,7 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
                 if (isFree) {
                   icon = Icons.star_border;
                   iconColor = neonGreen;
-                  iconBg = Colors.white.withOpacity(0.05);
+                  iconBg = Colors.white.withValues(alpha: 0.05);
                   subtitle = 'Perfect for exploring deals';
                   buttonText = 'Get Started';
                 } else if (isPro) {
@@ -99,7 +154,7 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
                 } else {
                   icon = Icons.workspace_premium_outlined;
                   iconColor = const Color(0xFFFBBF24);
-                  iconBg = Colors.white.withOpacity(0.05);
+                  iconBg = Colors.white.withValues(alpha: 0.05);
                   subtitle = isElite ? 'For serious investors' : 'Exclusive access';
                   buttonText = 'Upgrade Now';
                 }
@@ -123,13 +178,13 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
                     cardColor: cardColor,
                   ),
                 );
-              }).toList(),
+              }),
 
               const SizedBox(height: 8),
               Text(
                 'All plans include secure payments and can be cancelled anytime',
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   fontSize: 12,
                 ),
               ),
@@ -167,12 +222,12 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
             color: cardColor,
             borderRadius: BorderRadius.circular(24),
             border: Border.all(
-              color: isPopular ? neonGreen.withOpacity(0.5) : Colors.white.withOpacity(0.05),
+              color: isPopular ? neonGreen.withValues(alpha: 0.5) : Colors.white.withValues(alpha: 0.05),
               width: isPopular ? 2 : 1,
             ),
             boxShadow: isPopular ? [
               BoxShadow(
-                color: neonGreen.withOpacity(0.1),
+                color: neonGreen.withValues(alpha: 0.1),
                 blurRadius: 20,
                 spreadRadius: 2,
               )
@@ -206,7 +261,7 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
                       Text(
                         subtitle,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.5),
+                          color: Colors.white.withValues(alpha: 0.5),
                           fontSize: 12,
                         ),
                       ),
@@ -231,7 +286,7 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
                     child: Text(
                       period,
                       style: TextStyle(
-                        color: Colors.white.withOpacity(0.4),
+                        color: Colors.white.withValues(alpha: 0.4),
                         fontSize: 14,
                       ),
                     ),
@@ -245,7 +300,7 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
                   children: [
                     Icon(
                       Icons.check_circle,
-                      color: isPopular ? neonGreen : neonGreen.withOpacity(0.5),
+                      color: isPopular ? neonGreen : neonGreen.withValues(alpha: 0.5),
                       size: 20,
                     ),
                     const SizedBox(width: 12),
@@ -253,14 +308,14 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
                       child: Text(
                         feature,
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.8),
+                          color: Colors.white.withValues(alpha: 0.8),
                           fontSize: 14,
                         ),
                       ),
                     ),
                   ],
                 ),
-              )).toList(),
+              )),
               const SizedBox(height: 24),
               SizedBox(
                 width: double.infinity,
@@ -268,7 +323,7 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
                 child: ElevatedButton(
                   onPressed: onSubscribe,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: isPopular ? neonGreen : Colors.white.withOpacity(0.05),
+                    backgroundColor: isPopular ? neonGreen : Colors.white.withValues(alpha: 0.05),
                     foregroundColor: isPopular ? Colors.black : Colors.white,
                     elevation: 0,
                     shape: RoundedRectangleBorder(
@@ -300,7 +355,7 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
                     BoxShadow(
-                      color: neonGreen.withOpacity(0.4),
+                      color: neonGreen.withValues(alpha: 0.4),
                       blurRadius: 8,
                       offset: const Offset(0, 2),
                     ),

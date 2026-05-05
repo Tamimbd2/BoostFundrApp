@@ -1,16 +1,17 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:boost_fundr/export.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
+  final String? title;
   final List<Widget>? actions;
   final bool showBackButton;
+  final Widget? backWidget;
 
   const CustomAppBar({
     super.key,
-    required this.title,
+    this.title,
     this.actions,
     this.showBackButton = true,
+    this.backWidget,
   });
 
   @override
@@ -20,23 +21,27 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
         child: Row(
           children: [
-            if (showBackButton)
+            if (backWidget != null)
+              backWidget!
+            else if (showBackButton)
               IconButton(
                 onPressed: () => Get.back(),
                 icon: const Icon(Icons.arrow_back_ios, color: Colors.white, size: 22),
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
               ),
-            if (showBackButton) const SizedBox(width: 12),
+            if (showBackButton || backWidget != null) const SizedBox(width: 12),
             Expanded(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              child: title != null
+                  ? Text(
+                      title!,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    )
+                  : const SizedBox.shrink(),
             ),
             if (actions != null) ...actions!,
           ],

@@ -130,7 +130,7 @@ class EditProfileView extends GetView<EditProfileController> {
                 decoration: BoxDecoration(
                   color: const Color(0xFF111111),
                   shape: BoxShape.circle,
-                  border: Border.all(color: const Color(0xFF22C55E).withOpacity(0.3)),
+                  border: Border.all(color: const Color(0xFF22C55E).withValues(alpha: 0.3)),
                   image: controller.selectedImagePath.value.isNotEmpty
                       ? DecorationImage(image: FileImage(File(controller.selectedImagePath.value)), fit: BoxFit.cover)
                       : (controller.profileImage.value.isNotEmpty
@@ -201,7 +201,7 @@ class EditProfileView extends GetView<EditProfileController> {
           style: TextStyle(color: readOnly ? Colors.white38 : Colors.white),
           decoration: InputDecoration(
             hintText: hint,
-            hintStyle: TextStyle(color: Colors.white.withOpacity(0.2)),
+            hintStyle: TextStyle(color: Colors.white.withValues(alpha: 0.2)),
             filled: true,
             fillColor: const Color(0xFF111111),
             contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),

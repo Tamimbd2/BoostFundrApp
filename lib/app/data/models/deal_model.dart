@@ -50,9 +50,9 @@ class DealModel {
     this.qa,
     this.users,
     this.growthRate,
-    this.CAC,
-    this.LTV,
-    this.CHURN,
+    this.cac,
+    this.ltv,
+    this.churn,
     this.whatsappNumber,
     this.tagline,
     this.location,
@@ -81,9 +81,9 @@ class DealModel {
   // SaaS / Growth
   int? users;
   int? growthRate;
-  String? CAC;
-  String? LTV;
-  String? CHURN;
+  String? cac;
+  String? ltv;
+  String? churn;
 
   // Contact
   String? whatsappNumber;
@@ -129,9 +129,9 @@ class DealModel {
 
     users = (funding['users'] as num?)?.toInt() ?? (json['users'] as num?)?.toInt();
     growthRate = (funding['growthRate'] as num?)?.toInt() ?? (json['growthRate'] as num?)?.toInt();
-    CAC = (funding['CAC'] ?? json['CAC'])?.toString();
-    LTV = (funding['LTV'] ?? json['LTV'])?.toString();
-    CHURN = (funding['CHURN'] ?? json['CHURN'])?.toString();
+    cac = (funding['CAC'] ?? json['CAC'])?.toString();
+    ltv = (funding['LTV'] ?? json['LTV'])?.toString();
+    churn = (funding['CHURN'] ?? json['CHURN'])?.toString();
 
     whatsappNumber = basic['whatsappNumber'] ?? json['whatsappNumber'];
     startupWebsite = basic['startupWebsite'] ?? json['startupWebsite'];
@@ -199,9 +199,9 @@ class DealModel {
       'qa': qa,
       'users': users,
       'growthRate': growthRate,
-      'CAC': CAC,
-      'LTV': LTV,
-      'CHURN': CHURN,
+      'CAC': cac,
+      'LTV': ltv,
+      'CHURN': churn,
       'revenue': revenue,
       'currentStep': currentStep,
       'goalAmount': raisedGoal,

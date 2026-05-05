@@ -53,18 +53,18 @@ class SignupController extends GetxController {
         Get.snackbar(
           'Success',
           'Account created successfully!',
-          backgroundColor: const Color(0xFF22C55E).withOpacity(0.1),
+          backgroundColor: const Color(0xFF22C55E).withValues(alpha: 0.1),
           colorText: Colors.white,
         );
         Get.offAllNamed('/login');
       } else {
         String message = response.body?['message'] ?? 'Registration failed';
         Get.snackbar('Error', message, 
-          backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.white);
+          backgroundColor: Colors.red.withValues(alpha: 0.1), colorText: Colors.white);
       }
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred', 
-        backgroundColor: Colors.red.withOpacity(0.1), colorText: Colors.white);
+        backgroundColor: Colors.red.withValues(alpha: 0.1), colorText: Colors.white);
     } finally {
       isLoading.value = false;
     }

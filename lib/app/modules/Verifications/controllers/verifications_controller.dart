@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
-import 'package:http_parser/http_parser.dart';
 import '../../../data/providers/verifications_provider.dart';
 import '../../../data/api_constants.dart';
 
@@ -141,7 +140,6 @@ class VerificationsController extends GetxController {
     bool hasNid = nicFront.value != null && nicBack.value != null;
     bool hasPassport = passport.value != null;
     bool hasDrivingLicence = drivingLicence.value != null;
-    bool hasSelfie = selfie.value != null;
 
     if (userRole.value == 'investor') {
       // Investor specific validation if any, but let's keep it flexible
@@ -212,7 +210,7 @@ class VerificationsController extends GetxController {
             snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.redAccent, colorText: Colors.white);
       }
     } catch (e) {
-      print('Error submitting verification: $e');
+      debugPrint('Error submitting verification: $e');
       Get.snackbar('Error', 'An unexpected error occurred', 
           snackPosition: SnackPosition.BOTTOM, backgroundColor: Colors.redAccent, colorText: Colors.white);
     } finally {
@@ -233,7 +231,7 @@ class VerificationsController extends GetxController {
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF22C55E).withOpacity(0.1),
+                  color: const Color(0xFF22C55E).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
@@ -256,7 +254,7 @@ class VerificationsController extends GetxController {
                 'Your verification documents have been submitted successfully. We will review them shortly.',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.6),
+                  color: Colors.white.withValues(alpha: 0.6),
                   fontSize: 14,
                   height: 1.5,
                 ),

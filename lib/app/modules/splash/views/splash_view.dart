@@ -1,77 +1,50 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:get/get.dart';
-
+import 'package:boost_fundr/export.dart';
 import '../controllers/splash_controller.dart';
 
-class SplashView extends GetView<SplashController> {
+class SplashView extends StatefulWidget {
   const SplashView({super.key});
 
   @override
+  State<SplashView> createState() => _SplashViewState();
+}
+
+class _SplashViewState extends State<SplashView> {
+  @override
+  void initState() {
+    // কন্ট্রোলার থেকে নেভিগেশন লজিক কল করা
+    SplashController.to.checkNavigation();
+    
+    // স্ট্যাটাস বার কালো করা
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+        systemNavigationBarColor: Colors.black, 
+        statusBarColor: Colors.black
+    ));
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: const SystemUiOverlayStyle(
-        statusBarColor: Colors.black,
-        statusBarIconBrightness: Brightness.light,
-        statusBarBrightness: Brightness.dark,
-      ),
-      child: Scaffold(
-        backgroundColor: Colors.black,
-        body: SizedBox(
-          width: double.infinity,
-          height: double.infinity,
-          child: Stack(
-            clipBehavior: Clip.none,
-            children: [
-              const Positioned.fill(child: ColoredBox(color: Colors.black)),
-
-              const Center(child: _LogoSection()),
-
-              const Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: EdgeInsets.only(bottom: 52),
-                  child: _LoadingIndicator(),
+    return SplashBackground(
+      child: Center(
+        child: Padding(
+          padding: padXY(40, 0),
+          child: TweenAnimationBuilder<double>(
+            tween: Tween<double>(begin: 0.0, end: 1.0),
+            duration: const Duration(milliseconds: 1500),
+            curve: Curves.easeOutCubic,
+            builder: (context, value, child) {
+              return Opacity(
+                opacity: value,
+                child: Transform.scale(
+                  scale: 0.85 + (0.15 * value),
+                  child: child,
                 ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _LogoSection extends StatelessWidget {
-  const _LogoSection();
-
-  @override
-  Widget build(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return Image.asset(
-      'assets/logo/logo.png',
-      width: size.width * 0.82,
-      fit: BoxFit.contain,
-    );
-  }
-}
-
-class _LoadingIndicator extends StatelessWidget {
-  const _LoadingIndicator();
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: List.generate(
-        3,
-        (index) => Container(
-          margin: const EdgeInsets.symmetric(vertical: 3),
-          width: 5,
-          height: 5,
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            color: const Color(0xFF8DC63F).withOpacity(1 - (index * 0.28)),
+              );
+            },
+            child: const CustomSvgImage(
+              logo: ImageConst.icAppLogo2,
+              isFlip: false,
+            ),
           ),
         ),
       ),

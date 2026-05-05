@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:boost_fundr/export.dart';
 import '../controllers/login_controller.dart';
 import '../../../routes/app_pages.dart';
 
@@ -9,10 +8,9 @@ class LoginView extends GetView<LoginController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          SafeArea(
+      resizeToAvoidBottomInset: false,
+      body: SplashBackground(
+        child: SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
@@ -35,8 +33,8 @@ class LoginView extends GetView<LoginController> {
                     'welcome_back'.tr,
                     style: const TextStyle(
                       color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 34,
+                      fontWeight: FontWeight.w800,
                       letterSpacing: -0.5,
                     ),
                   ),
@@ -46,35 +44,70 @@ class LoginView extends GetView<LoginController> {
                   Text(
                     'login_to_continue'.tr,
                     style: TextStyle(
-                      color: Colors.white.withOpacity(0.45),
-                      fontSize: 15,
+                      color: Colors.white.withValues(alpha: 0.4),
+                      fontSize: 16,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
 
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 32),
+
+                  // Social Login Section
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SocialButton(
+                        iconPath: 'assets/logo/icon/google.svg',
+                        label: 'Google',
+                        onTap: () => _showRoleSelectionDialog(context),
+                      ),
+                      // const SizedBox(width: 12),
+                      // SocialButton(
+                      //   iconPath: 'assets/logo/icon/facebook.svg',
+                      //   label: 'Facebook',
+                      //   onTap: controller.loginWithFacebook,
+                      // ),
+                    ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Or divider
+                  Center(
+                    child: Text(
+                      'or'.tr,
+                      style: TextStyle(
+                        color: Colors.white.withValues(alpha: 0.3),
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        letterSpacing: 1.5,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 32),
 
                   // Email Field
-                  _buildTextField(
-                    label: 'email'.tr,
-                    hintText: 'enter_email'.tr,
-                    keyboardType: TextInputType.emailAddress,
+                  Obx(() => CustomInput(
+                    hint: 'enter_email'.tr,
+                    controller: TextEditingController(text: controller.email.value)..selection = TextSelection.fromPosition(TextPosition(offset: controller.email.value.length)),
                     onChanged: (val) => controller.email.value = val,
-                  ),
+                    errorText: controller.emailError.value,
+                  )),
                   const SizedBox(height: 20),
 
                   // Password Field
-                  Obx(() => _buildTextField(
-                    label: 'password'.tr,
-                    hintText: 'enter_password'.tr,
-                    isPassword: !controller.isPasswordVisible.value,
+                  Obx(() => CustomInput(
+                    hint: 'enter_password'.tr,
+                    obscureText: !controller.isPasswordVisible.value,
                     onChanged: (val) => controller.password.value = val,
+                    errorText: controller.passwordError.value,
                     suffixIcon: IconButton(
                       icon: Icon(
                         controller.isPasswordVisible.value
                             ? Icons.visibility
                             : Icons.visibility_off,
-                        color: Colors.white.withOpacity(0.3),
+                        color: Colors.white.withValues(alpha: 0.3),
                         size: 20,
                       ),
                       onPressed: controller.togglePasswordVisibility,
@@ -87,11 +120,11 @@ class LoginView extends GetView<LoginController> {
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {},
+                      onPressed: () => Get.toNamed(Routes.FORGOT_PASSWORD),
                       child: Text(
                         'forgot_password'.tr,
                         style: TextStyle(
-                          color: const Color(0xFF22C55E).withOpacity(0.9),
+                          color: const Color(0xFF22C55E).withValues(alpha: 0.9),
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
                         ),
@@ -101,74 +134,14 @@ class LoginView extends GetView<LoginController> {
 
                   const SizedBox(height: 32),
 
-                  SizedBox(
-                    width: double.infinity,
-                    height: 58,
-                    child: Obx(() => ElevatedButton(
-                      onPressed: controller.isLoading.value ? null : controller.login,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF22C55E),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(32),
-                        ),
-                        elevation: 0,
-                        disabledBackgroundColor: const Color(0xFF22C55E).withOpacity(0.5),
-                      ),
-                      child: controller.isLoading.value
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                color: Colors.white,
-                              ),
-                            )
-                          : Text(
-                              'sign_in'.tr,
-                              style: const TextStyle(
-                                fontSize: 17,
-                                fontWeight: FontWeight.w600,
-                                letterSpacing: 0.2,
-                              ),
-                            ),
-                    )),
-                  ),
+                  Obx(() => PrimaryButton(
+                    text: 'sign_in'.tr,
+                    isLoading: controller.isLoading.value,
+                    onPressed: controller.login,
+                  )),
 
                   const SizedBox(height: 24),
 
-                  // Or divider
-                  Center(
-                    child: Text(
-                      'or'.tr,
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.3),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 1.5,
-                      ),
-                    ),
-                  ),
-
-                  const SizedBox(height: 24),
-
-                  // Social Login Section
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _SocialButton(
-                        icon: Icons.g_mobiledata,
-                        label: 'Google',
-                        onTap: () => _showRoleSelectionDialog(context),
-                      ),
-                      const SizedBox(width: 12),
-                      _SocialButton(
-                        icon: Icons.facebook,
-                        label: 'Facebook',
-                        onTap: controller.loginWithFacebook,
-                      ),
-                    ],
-                  ),
 
                   const SizedBox(height: 48),
 
@@ -178,9 +151,9 @@ class LoginView extends GetView<LoginController> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(
-                          'dont_have_account'.tr + ' ',
+                          '${'dont_have_account'.tr} ',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.45),
+                            color: Colors.white.withValues(alpha: 0.45),
                             fontSize: 14,
                           ),
                         ),
@@ -200,65 +173,18 @@ class LoginView extends GetView<LoginController> {
                   ),
                   const SizedBox(height: 40),
                 ],
-              ),
             ),
           ),
-        ],
+        ),
       ),
     );
   }
 
-  Widget _buildTextField({
-    required String label,
-    required String hintText,
-    bool isPassword = false,
-    TextInputType? keyboardType,
-    Widget? suffixIcon,
-    Function(String)? onChanged,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.only(left: 4, bottom: 8),
-          child: Text(
-            label,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-            ),
-          ),
-        ),
-        Container(
-          decoration: BoxDecoration(
-            color: const Color(0xFF111111),
-            borderRadius: BorderRadius.circular(14),
-            border: Border.all(color: const Color(0xFF2A2A2A)),
-          ),
-          child: TextField(
-            obscureText: isPassword,
-            keyboardType: keyboardType,
-            onChanged: onChanged,
-            style: const TextStyle(color: Colors.white, fontSize: 15),
-            decoration: InputDecoration(
-              hintText: hintText,
-              hintStyle: TextStyle(color: Colors.white.withOpacity(0.2)),
-              contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-              border: InputBorder.none,
-              suffixIcon: suffixIcon,
-            ),
-          ),
-        ),
-      ],
-    );
-  }
   void _showRoleSelectionDialog(BuildContext context) {
     Get.dialog(
       Dialog(
-        backgroundColor: const Color(0xFF111111),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-        child: Container(
+        backgroundColor: Colors.transparent,
+        child: GlassCard(
           padding: const EdgeInsets.all(24),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -284,55 +210,37 @@ class LoginView extends GetView<LoginController> {
               const SizedBox(height: 8),
               Text(
                 'select_role_desc'.tr,
-                style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 14),
               ),
               const SizedBox(height: 24),
-              Row(
+              Obx(() => Row(
                 children: [
                   Expanded(
-                    child: Obx(() => _buildRoleCard(
-                          title: 'investor'.tr,
-                          icon: Icons.person_outline,
-                          isSelected: controller.selectedRole.value == 'investor',
-                          onTap: () => controller.selectedRole.value = 'investor',
-                        )),
+                    child: _buildRoleCard(
+                      title: 'investor'.tr,
+                      icon: Icons.person_outline,
+                      isSelected: controller.selectedRole.value == 'investor',
+                      onTap: () => controller.selectedRole.value = 'investor',
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: Obx(() => _buildRoleCard(
-                          title: 'founder'.tr,
-                          icon: Icons.rocket_launch_outlined,
-                          isSelected: controller.selectedRole.value == 'founder',
-                          onTap: () => controller.selectedRole.value = 'founder',
-                        )),
+                    child: _buildRoleCard(
+                      title: 'founder'.tr,
+                      icon: Icons.rocket_launch_outlined,
+                      isSelected: controller.selectedRole.value == 'founder',
+                      onTap: () => controller.selectedRole.value = 'founder',
+                    ),
                   ),
                 ],
-              ),
+              )),
               const SizedBox(height: 24),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Get.back();
-                    controller.loginWithGoogle(controller.selectedRole.value);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFF22C55E),
-                    padding: const EdgeInsets.symmetric(vertical: 16),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    'continue'.tr,
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
+              PrimaryButton(
+                text: 'continue'.tr,
+                onPressed: () {
+                  Get.back();
+                  controller.loginWithGoogle(controller.selectedRole.value);
+                },
               ),
             ],
           ),
@@ -349,13 +257,14 @@ class LoginView extends GetView<LoginController> {
   }) {
     return GestureDetector(
       onTap: onTap,
+      behavior: HitTestBehavior.opaque,
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 24),
         decoration: BoxDecoration(
-          color: const Color(0xFF1A1A1A),
+          color: Colors.white.withValues(alpha: 0.05),
           borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected ? const Color(0xFF22C55E) : const Color(0xFF2A2A2A),
+            color: isSelected ? AppTheme.primary : Colors.white.withValues(alpha: 0.1),
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -363,14 +272,14 @@ class LoginView extends GetView<LoginController> {
           children: [
             Icon(
               icon,
-              color: isSelected ? const Color(0xFF22C55E) : Colors.white,
+              color: isSelected ? AppTheme.primary : Colors.white,
               size: 32,
             ),
             const SizedBox(height: 12),
             Text(
               title,
               style: TextStyle(
-                color: isSelected ? const Color(0xFF22C55E) : Colors.white,
+                color: isSelected ? AppTheme.primary : Colors.white,
                 fontWeight: FontWeight.bold,
                 fontSize: 15,
               ),
@@ -382,43 +291,4 @@ class LoginView extends GetView<LoginController> {
   }
 }
 
-class _SocialButton extends StatelessWidget {
-  final IconData icon;
-  final String label;
-  final VoidCallback onTap;
 
-  const _SocialButton({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        decoration: BoxDecoration(
-          color: Colors.transparent,
-          borderRadius: BorderRadius.circular(32),
-          border: Border.all(color: const Color(0xFF2A2A2A)),
-        ),
-        child: Row(
-          children: [
-            Icon(icon, color: Colors.white, size: 24),
-            const SizedBox(width: 8),
-            Text(
-              label,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}

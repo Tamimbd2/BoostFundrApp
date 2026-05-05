@@ -57,7 +57,7 @@ class CardDetailsView extends GetView<CardDetailsController> {
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.05),
+                      color: Colors.white.withValues(alpha: 0.05),
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Column(
@@ -86,7 +86,7 @@ class CardDetailsView extends GetView<CardDetailsController> {
                   ElevatedButton(
                     onPressed: controller.fetchDealDetail,
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: neonGreen.withOpacity(0.1),
+                      backgroundColor: neonGreen.withValues(alpha: 0.1),
                       foregroundColor: neonGreen,
                       side: const BorderSide(color: neonGreen),
                     ),
@@ -282,7 +282,7 @@ class CardDetailsView extends GetView<CardDetailsController> {
               Image.network(
                 img,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _imagePlaceholder(neonGreen),
+                errorBuilder: (context, error, stackTrace) => _imagePlaceholder(neonGreen),
               )
             else
               _imagePlaceholder(neonGreen),
@@ -305,7 +305,7 @@ class CardDetailsView extends GetView<CardDetailsController> {
     color: const Color(0xFF0B0F14),
     child: Icon(
       Icons.rocket_launch_outlined,
-      color: neonGreen.withOpacity(0.2),
+      color: neonGreen.withValues(alpha: 0.2),
       size: 48,
     ),
   );
@@ -336,9 +336,9 @@ class CardDetailsView extends GetView<CardDetailsController> {
   Widget _chip(String label, Color color) => Container(
     padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
     decoration: BoxDecoration(
-      color: color.withOpacity(0.1),
+      color: color.withValues(alpha: 0.1),
       borderRadius: BorderRadius.circular(20),
-      border: Border.all(color: color.withOpacity(0.3)),
+      border: Border.all(color: color.withValues(alpha: 0.3)),
     ),
     child: Text(
       label,
@@ -366,7 +366,7 @@ class CardDetailsView extends GetView<CardDetailsController> {
           Text(
             controller.shortPitch,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.5),
+              color: Colors.white.withValues(alpha: 0.5),
               fontSize: 13,
             ),
           ),
@@ -377,14 +377,14 @@ class CardDetailsView extends GetView<CardDetailsController> {
             children: [
               Icon(
                 Icons.location_on_outlined,
-                color: Colors.white.withOpacity(0.3),
+                color: Colors.white.withValues(alpha: 0.3),
                 size: 14,
               ),
               const SizedBox(width: 4),
               Text(
                 controller.location,
                 style: TextStyle(
-                  color: Colors.white.withOpacity(0.3),
+                  color: Colors.white.withValues(alpha: 0.3),
                   fontSize: 12,
                 ),
               ),
@@ -485,7 +485,7 @@ class CardDetailsView extends GetView<CardDetailsController> {
               const Spacer(),
               Icon(
                 Icons.shield_outlined,
-                color: color.withOpacity(0.5),
+                color: color.withValues(alpha: 0.5),
                 size: 32,
               ),
             ],
@@ -505,7 +505,7 @@ class CardDetailsView extends GetView<CardDetailsController> {
           Text(
             content,
             style: TextStyle(
-              color: Colors.white.withOpacity(0.7),
+              color: Colors.white.withValues(alpha: 0.7),
               fontSize: 13,
               height: 1.6,
             ),
@@ -519,61 +519,53 @@ class CardDetailsView extends GetView<CardDetailsController> {
     return Wrap(
       spacing: 8,
       runSpacing: 8,
-      children: controller.tractionHighlights
-          .map(
-            (t) => Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: neonGreen.withOpacity(0.05),
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: neonGreen.withOpacity(0.2)),
-              ),
-              child: Text(
-                t,
-                style: TextStyle(
-                  color: neonGreen.withOpacity(0.8),
-                  fontSize: 11,
-                ),
-              ),
-            ),
-          )
-          .toList(),
+      children: controller.tractionHighlights.map((t) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+        decoration: BoxDecoration(
+          color: neonGreen.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: neonGreen.withValues(alpha: 0.2)),
+        ),
+        child: Text(
+          t,
+          style: TextStyle(
+            color: neonGreen.withValues(alpha: 0.8),
+            fontSize: 11,
+          ),
+        ),
+      )).toList(),
     );
   }
 
   Widget _buildFaqList() {
     return Column(
-      children: controller.faq
-          .map(
-            (f) => Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.03),
-                borderRadius: BorderRadius.circular(10),
-              ),
-              child: Row(
-                children: [
-                  const Icon(
-                    Icons.help_outline,
-                    color: Colors.white24,
-                    size: 16,
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      f,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 13,
-                      ),
-                    ),
-                  ),
-                ],
+      children: controller.faq.map((f) => Container(
+        margin: const EdgeInsets.only(bottom: 8),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white.withValues(alpha: 0.03),
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Row(
+          children: [
+            const Icon(
+              Icons.help_outline,
+              color: Colors.white24,
+              size: 16,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                f,
+                style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 13,
+                ),
               ),
             ),
-          )
-          .toList(),
+          ],
+        ),
+      )).toList(),
     );
   }
 
@@ -587,7 +579,7 @@ class CardDetailsView extends GetView<CardDetailsController> {
           Text(
             'Campaign Ends',
             style: TextStyle(
-              color: Colors.white.withOpacity(0.5),
+              color: Colors.white.withValues(alpha: 0.5),
               fontSize: 14,
             ),
           ),
@@ -606,7 +598,7 @@ class CardDetailsView extends GetView<CardDetailsController> {
     decoration: BoxDecoration(
       color: const Color(0xFF0D1117),
       borderRadius: BorderRadius.circular(16),
-      border: Border.all(color: Colors.white.withOpacity(0.05)),
+      border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
     ),
     child: child,
   );
@@ -656,7 +648,7 @@ class CardDetailsView extends GetView<CardDetailsController> {
               imageFilter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
               child: child,
             ),
-            Container(color: Colors.black.withOpacity(0.5)),
+            Container(color: Colors.black.withValues(alpha: 0.5)),
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: Column(

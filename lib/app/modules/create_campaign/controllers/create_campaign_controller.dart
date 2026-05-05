@@ -1,10 +1,8 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../data/models/deal_model.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mime/mime.dart';
-import 'package:http_parser/http_parser.dart';
 import 'package:file_picker/file_picker.dart' as fp;
 import '../../../data/providers/deals_provider.dart';
 
@@ -175,7 +173,7 @@ class CreateCampaignController extends GetxController {
     } catch (e) {
       debugPrint('Error picking PDF: $e');
       Get.snackbar('Error', 'Could not open file manager: $e', 
-          backgroundColor: Colors.redAccent.withOpacity(0.1), colorText: Colors.white);
+          backgroundColor: Colors.redAccent.withValues(alpha: 0.1), colorText: Colors.white);
     } finally {
       _isPicking = false;
     }
@@ -372,7 +370,7 @@ class CreateCampaignController extends GetxController {
       }
     } catch (e) {
       Get.snackbar('Error', 'An unexpected error occurred',
-          backgroundColor: Colors.redAccent.withOpacity(0.1), colorText: Colors.white);
+          backgroundColor: Colors.redAccent.withValues(alpha: 0.1), colorText: Colors.white);
     } finally {
       isLoading.value = false;
     }
@@ -391,7 +389,7 @@ class CreateCampaignController extends GetxController {
       Get.snackbar(
         'Success',
         'Progress saved',
-        backgroundColor: const Color(0xFF22C55E).withOpacity(0.1),
+        backgroundColor: const Color(0xFF22C55E).withValues(alpha: 0.1),
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
       );
@@ -402,7 +400,7 @@ class CreateCampaignController extends GetxController {
     Get.snackbar(
       'Error',
       response.body?['message'] ?? 'Action failed',
-      backgroundColor: Colors.redAccent.withOpacity(0.1),
+      backgroundColor: Colors.redAccent.withValues(alpha: 0.1),
       colorText: Colors.white,
     );
   }
@@ -420,7 +418,7 @@ class CreateCampaignController extends GetxController {
               Container(
                 padding: const EdgeInsets.all(16),
                 decoration: BoxDecoration(
-                  color: const Color(0xFF22C55E).withOpacity(0.1),
+                  color: const Color(0xFF22C55E).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(Icons.check_circle, color: Color(0xFF22C55E), size: 60),
@@ -434,7 +432,7 @@ class CreateCampaignController extends GetxController {
               Text(
                 'Your deal has been created successfully.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white.withOpacity(0.6), fontSize: 14),
+                style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 14),
               ),
             ],
           ),

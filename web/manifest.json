@@ -1,6 +1,6 @@
 {
-    "name": "boost_fundr",
-    "short_name": "boost_fundr",
+    "name": "BoostFundr",
+    "short_name": "BoostFundr",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

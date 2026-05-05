@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import '../controllers/my_campaign_controller.dart';
 import '../../../data/models/deal_model.dart';
 import '../../../routes/app_pages.dart';
+import '../../../widgets/gradient_background.dart';
 
 class MyCampaignView extends GetView<MyCampaignController> {
   const MyCampaignView({super.key});
@@ -28,7 +29,8 @@ class MyCampaignView extends GetView<MyCampaignController> {
         ),
         centerTitle: true,
       ),
-      body: Obx(() {
+      body: GradientBackground(
+        child: Obx(() {
         if (controller.isLoading.value) {
           return const Center(
             child: CircularProgressIndicator(color: Color(0xFF22C55E)),
@@ -43,13 +45,13 @@ class MyCampaignView extends GetView<MyCampaignController> {
                 Icon(
                   Icons.campaign_outlined,
                   size: 64,
-                  color: Colors.white.withOpacity(0.2),
+                  color: Colors.white.withValues(alpha: 0.2),
                 ),
                 const SizedBox(height: 16),
                 Text(
                   'You haven\'t created any deals yet.',
                   style: TextStyle(
-                    color: Colors.white.withOpacity(0.6),
+                    color: Colors.white.withValues(alpha: 0.6),
                     fontSize: 16,
                   ),
                 ),
@@ -67,6 +69,7 @@ class MyCampaignView extends GetView<MyCampaignController> {
           },
         );
       }),
+      ),
     );
   }
 
@@ -105,7 +108,7 @@ class MyCampaignView extends GetView<MyCampaignController> {
         decoration: BoxDecoration(
           color: const Color(0xFF161616), // Dark background matching screenshot
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.05), width: 1),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05), width: 1),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -121,7 +124,7 @@ class MyCampaignView extends GetView<MyCampaignController> {
                     width: 80,
                     height: 80,
                     fit: BoxFit.cover,
-                    errorBuilder: (_, __, ___) => Container(
+                    errorBuilder: (context, error, stackTrace) => Container(
                       width: 80,
                       height: 80,
                       decoration: BoxDecoration(
@@ -221,7 +224,7 @@ class MyCampaignView extends GetView<MyCampaignController> {
                                 Text(
                                   'Edit Deal',
                                   style: TextStyle(
-                                    color: Colors.white.withOpacity(0.9),
+                                    color: Colors.white.withValues(alpha: 0.9),
                                     fontSize: 14,
                                   ),
                                 ),
@@ -241,7 +244,7 @@ class MyCampaignView extends GetView<MyCampaignController> {
                                 Text(
                                   'Delete',
                                   style: TextStyle(
-                                    color: Colors.redAccent.withOpacity(0.9),
+                                    color: Colors.redAccent.withValues(alpha: 0.9),
                                     fontSize: 14,
                                   ),
                                 ),

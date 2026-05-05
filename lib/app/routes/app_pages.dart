@@ -26,10 +26,14 @@ import '../modules/Wallet/bindings/wallet_binding.dart';
 import '../modules/Wallet/views/wallet_view.dart';
 import '../modules/cardDetails/bindings/card_details_binding.dart';
 import '../modules/cardDetails/views/card_details_view.dart';
+import '../modules/changePassword/bindings/change_password_binding.dart';
+import '../modules/changePassword/views/change_password_view.dart';
 import '../modules/create_campaign/bindings/create_campaign_binding.dart';
 import '../modules/create_campaign/views/create_campaign_view.dart';
 import '../modules/editProfile/bindings/edit_profile_binding.dart';
 import '../modules/editProfile/views/edit_profile_view.dart';
+import '../modules/forgotPassword/bindings/forgot_password_binding.dart';
+import '../modules/forgotPassword/views/forgot_password_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/login/bindings/login_binding.dart';
@@ -52,6 +56,10 @@ import '../modules/splash/bindings/splash_binding.dart';
 import '../modules/splash/views/splash_view.dart';
 import '../modules/subscriptions/bindings/subscriptions_binding.dart';
 import '../modules/subscriptions/views/subscriptions_view.dart';
+import '../modules/termsdetails/bindings/termsdetails_binding.dart';
+import '../modules/termsdetails/views/termsdetails_view.dart';
+import '../modules/verifyotp/bindings/verifyotp_binding.dart';
+import '../modules/verifyotp/views/verifyotp_view.dart';
 
 part 'app_routes.dart';
 
@@ -190,6 +198,26 @@ class AppPages {
       name: _Paths.MYDEALDETAILS,
       page: () => const MydealdetailsView(),
       binding: MydealdetailsBinding(),
+    ),
+    GetPage(
+      name: _Paths.FORGOT_PASSWORD,
+      page: () => const ForgotPasswordView(),
+      binding: ForgotPasswordBinding(),
+    ),
+    GetPage(
+      name: _Paths.VERIFYOTP,
+      page: () => const VerifyotpView(),
+      binding: VerifyotpBinding(),
+    ),
+    GetPage(
+      name: _Paths.CHANGE_PASSWORD,
+      page: () => const ChangePasswordView(),
+      binding: ChangePasswordBinding(),
+    ),
+    GetPage(
+      name: _Paths.TERMSDETAILS,
+      page: () => const TermsdetailsView(),
+      binding: TermsdetailsBinding(),
     ),
   ];
 }

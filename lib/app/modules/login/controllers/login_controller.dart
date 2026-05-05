@@ -21,32 +21,36 @@ class LoginController extends GetxController {
   final isLoading = false.obs;
   final selectedRole = 'investor'.obs;
 
+  final emailError = RxnString();
+  final passwordError = RxnString();
+
   void togglePasswordVisibility() {
     isPasswordVisible.value = !isPasswordVisible.value;
   }
 
   bool _validate() {
-    if (email.value.isEmpty || !GetUtils.isEmail(email.value)) {
-      Get.snackbar(
-        'Error',
-        'Please enter a valid email address',
-        backgroundColor: Colors.red.withOpacity(0.1),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return false;
+    emailError.value = null;
+    passwordError.value = null;
+
+    bool isValid = true;
+
+    if (email.value.isEmpty) {
+      emailError.value = 'email_required'.tr;
+      isValid = false;
+    } else if (!GetUtils.isEmail(email.value)) {
+      emailError.value = 'invalid_email'.tr;
+      isValid = false;
     }
-    if (password.value.isEmpty || password.value.length < 6) {
-      Get.snackbar(
-        'Error',
-        'Password must be at least 6 characters long',
-        backgroundColor: Colors.red.withOpacity(0.1),
-        colorText: Colors.white,
-        snackPosition: SnackPosition.BOTTOM,
-      );
-      return false;
+
+    if (password.value.isEmpty) {
+      passwordError.value = 'password_required'.tr;
+      isValid = false;
+    } else if (password.value.length < 6) {
+      passwordError.value = 'password_too_short'.tr;
+      isValid = false;
     }
-    return true;
+
+    return isValid;
   }
 
   Future<void> login() async {
@@ -63,7 +67,7 @@ class LoginController extends GetxController {
         Get.snackbar(
           'Success',
           'Logged in successfully!',
-          backgroundColor: const Color(0xFF22C55E).withOpacity(0.1),
+          backgroundColor: const Color(0xFF22C55E).withValues(alpha: 0.1),
           colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM,
         );
@@ -81,7 +85,7 @@ class LoginController extends GetxController {
           if (data is Map && data['user'] != null) {
             storage.write('user', data['user']);
             final role = data['user']['role'];
-            print('User logged in with role: $role');
+            debugPrint('User logged in with role: $role');
           }
           Get.offAllNamed('/home');
         } else {
@@ -92,7 +96,7 @@ class LoginController extends GetxController {
         Get.snackbar(
           'Login Failed',
           message,
-          backgroundColor: Colors.red.withOpacity(0.1),
+          backgroundColor: Colors.red.withValues(alpha: 0.1),
           colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM,
         );
@@ -101,7 +105,7 @@ class LoginController extends GetxController {
       Get.snackbar(
         'Error',
         'An unexpected error occurred',
-        backgroundColor: Colors.red.withOpacity(0.1),
+        backgroundColor: Colors.red.withValues(alpha: 0.1),
         colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
       );
@@ -175,7 +179,7 @@ class LoginController extends GetxController {
         Get.snackbar('Login Failed', message);
       }
     } catch (e) {
-      print('Google Login Error: $e');
+      debugPrint('Google Login Error: $e');
       Get.snackbar('Error', 'Google Sign-In failed');
     } finally {
       isLoading.value = false;

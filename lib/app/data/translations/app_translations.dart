@@ -25,6 +25,10 @@ class AppTranslations extends Translations {
           'forgot_password': 'Forgot Password?',
           'dont_have_account': "Don't have an account?",
           'already_have_account': 'Already have an account?',
+          'email_required': 'Email is required',
+          'invalid_email': 'Enter a valid email address',
+          'password_required': 'Password is required',
+          'password_too_short': 'Password must be at least 6 characters',
           
           'home': 'Home',
           'deals': 'Deals',
@@ -38,6 +42,7 @@ class AppTranslations extends Translations {
           'contact_us': 'Contact Us',
           'privacy_policy': 'Privacy Policy',
           'platform_guidelines': 'Platform Guidelines',
+          'terms_and_conditions': 'Terms and Conditions',
           
           'my_deal': 'My Deal',
           'save_deal': 'Save Deal',
@@ -90,6 +95,27 @@ class AppTranslations extends Translations {
           'cancel': 'Cancel',
           'yes': 'Yes',
           'no': 'No',
+          
+          // Forgot Password
+          'forgot_password_title': 'Forgot Password',
+          'forgot_password_subtitle': 'Enter your email address and we will send you a reset link.',
+          'email_address': 'Email Address',
+          'send_reset_link': 'Send OTP',
+          'remember_password': 'Remember Password?',
+          'login_btn': 'Login',
+          'sending': 'Sending...',
+          
+          // Change Password
+          'set_new_password': 'Set New Password',
+          'set_new_password_subtitle': 'Create a new password that is easy to remember but hard to guess.',
+          'new_password': 'New Password',
+          'confirm_new_password': 'Confirm New Password',
+          'enter_new_password': 'Enter new password',
+          'retype_new_password': 'Retype new password',
+          'update_password': 'Update Password',
+          'updating': 'Updating...',
+          'otp': 'OTP Code',
+          'enter_otp': 'Enter 6-digit OTP',
         },
         'ar_AR': {
           'app_name': 'بوست فندر',
@@ -113,6 +139,10 @@ class AppTranslations extends Translations {
           'forgot_password': 'هل نسيت كلمة المرور؟',
           'dont_have_account': 'ليس لديك حساب؟',
           'already_have_account': 'لديك حساب بالفعل؟',
+          'email_required': 'البريد الإلكتروني مطلوب',
+          'invalid_email': 'أدخل بريداً إلكترونياً صالحاً',
+          'password_required': 'كلمة المرور مطلوبة',
+          'password_too_short': 'يجب أن تكون كلمة المرور 6 أحرف على الأقل',
           
           'home': 'الرئيسية',
           'deals': 'العروض',
@@ -126,6 +156,7 @@ class AppTranslations extends Translations {
           'contact_us': 'اتصل بنا',
           'privacy_policy': 'سياسة الخصوصية',
           'platform_guidelines': 'إرشادات المنصة',
+          'terms_and_conditions': 'الشروط والأحكام',
           
           'my_deal': 'عرضي',
           'save_deal': 'حفظ العرض',
@@ -178,6 +209,27 @@ class AppTranslations extends Translations {
           'cancel': 'إلغاء',
           'yes': 'نعم',
           'no': 'لا',
+
+          // Forgot Password
+          'forgot_password_title': 'نسيت كلمة المرور',
+          'forgot_password_subtitle': 'أدخل عنوان بريدك الإلكتروني وسنرسل لك رابط إعادة التعيين.',
+          'email_address': 'عنوان البريد الإلكتروني',
+          'send_reset_link': 'إرسال رمز التحقق',
+          'remember_password': 'تذكر كلمة المرور؟',
+          'login_btn': 'تسجيل الدخول',
+          'sending': 'جاري الإرسال...',
+
+          // Change Password
+          'set_new_password': 'تعيين كلمة مرور جديدة',
+          'set_new_password_subtitle': 'قم بإنشاء كلمة مرور جديدة يسهل تذكرها ولكن يصعب تخمينها.',
+          'new_password': 'كلمة المرور الجديدة',
+          'confirm_new_password': 'تأكيد كلمة المرور الجديدة',
+          'enter_new_password': 'أدخل كلمة المرور الجديدة',
+          'retype_new_password': 'أعد كتابة كلمة المرور الجديدة',
+          'update_password': 'تحديث كلمة المرور',
+          'updating': 'جاري التحديث...',
+          'otp': 'رمز التحقق (OTP)',
+          'enter_otp': 'أدخل رمز التحقق المكون من 6 أرقام',
         },
       };
 }

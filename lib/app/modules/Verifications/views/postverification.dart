@@ -24,7 +24,7 @@ class PostVerificationView extends GetView<VerificationsController> {
                   const SizedBox(height: 8),
                   Text(
                     'Please upload clear photos of your documents to verify your identity and business.',
-                    style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 13),
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 13),
                   ),
                   const SizedBox(height: 32),
                   
@@ -143,11 +143,17 @@ class PostVerificationView extends GetView<VerificationsController> {
                         right: 8,
                         child: GestureDetector(
                           onTap: () {
-                            if (title.contains('NID Front')) controller.nicFront.value = null;
-                            else if (title.contains('NID Back')) controller.nicBack.value = null;
-                            else if (title.contains('Passport')) controller.passport.value = null;
-                            else if (title.contains('Driving Licence')) controller.drivingLicence.value = null;
-                            else if (title.contains('Selfie')) controller.selfie.value = null;
+                            if (title.contains('NID Front')) {
+                              controller.nicFront.value = null;
+                            } else if (title.contains('NID Back')) {
+                              controller.nicBack.value = null;
+                            } else if (title.contains('Passport')) {
+                              controller.passport.value = null;
+                            } else if (title.contains('Driving Licence')) {
+                              controller.drivingLicence.value = null;
+                            } else if (title.contains('Selfie')) {
+                              controller.selfie.value = null;
+                            }
                           },
                           child: Container(
                             padding: const EdgeInsets.all(4),
@@ -166,14 +172,14 @@ class PostVerificationView extends GetView<VerificationsController> {
                     children: [
                       Icon(
                         title.contains('Selfie') ? Icons.face_outlined : Icons.cloud_upload_outlined,
-                        color: Colors.white.withOpacity(0.3),
+                        color: Colors.white.withValues(alpha: 0.3),
                         size: 40,
                       ),
                       const SizedBox(height: 8),
                       Text(
                         title.contains('Selfie') ? 'Take a Selfie' : 'Tap to upload',
                         style: TextStyle(
-                          color: Colors.white.withOpacity(0.3),
+                          color: Colors.white.withValues(alpha: 0.3),
                           fontSize: 14,
                         ),
                       ),

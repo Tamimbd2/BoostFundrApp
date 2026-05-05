@@ -34,14 +34,14 @@ class SaveCampaignView extends GetView<SaveCampaignController> {
                       children: [
                         Icon(
                           Icons.bookmark_border,
-                          color: Colors.white.withOpacity(0.1),
+                          color: Colors.white.withValues(alpha: 0.1),
                           size: 80,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           'No saved deals yet',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.4),
+                            color: Colors.white.withValues(alpha: 0.4),
                             fontSize: 16,
                           ),
                         ),
@@ -49,7 +49,7 @@ class SaveCampaignView extends GetView<SaveCampaignController> {
                         Text(
                           'Deals you bookmark will appear here',
                           style: TextStyle(
-                            color: Colors.white.withOpacity(0.2),
+                            color: Colors.white.withValues(alpha: 0.2),
                             fontSize: 12,
                           ),
                         ),
@@ -118,7 +118,7 @@ class SaveCampaignView extends GetView<SaveCampaignController> {
         decoration: BoxDecoration(
           color: const Color(0xFF161616),
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: Colors.white.withOpacity(0.05), width: 1),
+          border: Border.all(color: Colors.white.withValues(alpha: 0.05), width: 1),
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,7 +130,7 @@ class SaveCampaignView extends GetView<SaveCampaignController> {
                 width: 80,
                 height: 80,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => Container(
+                errorBuilder: (context, error, stackTrace) => Container(
                   width: 80,
                   height: 80,
                   decoration: BoxDecoration(
@@ -191,7 +191,7 @@ class SaveCampaignView extends GetView<SaveCampaignController> {
                                 Text(
                                   'Unsave Deal',
                                   style: TextStyle(
-                                    color: Colors.white.withOpacity(0.9),
+                                    color: Colors.white.withValues(alpha: 0.9),
                                     fontSize: 14,
                                   ),
                                 ),

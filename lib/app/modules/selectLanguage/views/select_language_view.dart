@@ -1,5 +1,4 @@
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:boost_fundr/export.dart';
 import '../controllers/select_language_controller.dart';
 
 class SelectLanguageView extends GetView<SelectLanguageController> {
@@ -8,101 +7,71 @@ class SelectLanguageView extends GetView<SelectLanguageController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          // Main Content
-          SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 48),
+      body: SplashBackground(
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const SizedBox(height: 48),
 
-                  // Title
-                  Text(
-                    'select_language'.tr,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-
-                  // Subtitle
-                  Text(
-                    'choose_language_subtitle'.tr,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.45),
-                      fontSize: 15,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ),
-
-                  const SizedBox(height: 48),
-
-                  // Language Options
-                  Obx(
-                    () => Column(
-                      children: [
-                        _LanguageTile(
-                          label: 'English',
-                          isSelected: controller.selectedLanguage.value == 'en_US',
-                          onTap: () => controller.selectLanguage('en_US'),
-                        ),
-                        const SizedBox(height: 16),
-                        _LanguageTile(
-                          label: 'عربي',
-                          isSelected: controller.selectedLanguage.value == 'ar_AR',
-                          onTap: () => controller.selectLanguage('ar_AR'),
-                          isRtl: true,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  const Spacer(),
-                ],
-              ),
-            ),
-          ),
-
-          // Continue Button at bottom
-          Align(
-            alignment: Alignment.bottomCenter,
-            child: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 58,
-                  child: ElevatedButton(
-                    onPressed: controller.onContinue,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF22C55E),
-                      foregroundColor: Colors.white,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(32),
-                      ),
-                      elevation: 0,
-                    ),
-                    child: Text(
-                      controller.isFromProfile ? 'save'.tr : 'continue'.tr,
-                      style: const TextStyle(
-                        fontSize: 17,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.2,
-                      ),
-                    ),
+                // Title
+                Text(
+                  'select_language'.tr,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w800,
+                    letterSpacing: -0.5,
                   ),
                 ),
-              ),
+                const SizedBox(height: 8),
+
+                // Subtitle
+                Text(
+                  'choose_language_subtitle'.tr,
+                  style: TextStyle(
+                    color: Colors.white.withValues(alpha: 0.5),
+                    fontSize: 16,
+                    height: 1.5,
+                  ),
+                ),
+
+                const SizedBox(height: 48),
+
+                // Language Options
+                Obx(
+                  () => Column(
+                    children: [
+                      _LanguageTile(
+                        label: 'English',
+                        isSelected: controller.selectedLanguage.value == 'en_US',
+                        onTap: () => controller.selectLanguage('en_US'),
+                      ),
+                      const SizedBox(height: 16),
+                      _LanguageTile(
+                        label: 'عربي',
+                        isSelected: controller.selectedLanguage.value == 'ar_AR',
+                        onTap: () => controller.selectLanguage('ar_AR'),
+                        isRtl: true,
+                      ),
+                    ],
+                  ),
+                ),
+
+                const Spacer(),
+
+                // Continue Button
+                PrimaryButton(
+                  text: controller.isFromProfile ? 'save'.tr : 'continue'.tr,
+                  onPressed: controller.onContinue,
+                ),
+                const SizedBox(height: 20),
+              ],
             ),
           ),
-        ],
+        ),
       ),
     );
   }
@@ -128,15 +97,17 @@ class _LanguageTile extends StatelessWidget {
       child: AnimatedContainer(
         duration: const Duration(milliseconds: 200),
         width: double.infinity,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
         decoration: BoxDecoration(
-          color: isSelected ? const Color(0xFF0A1F12) : const Color(0xFF111111),
-          borderRadius: BorderRadius.circular(14),
+          color: isSelected 
+              ? ColorConst.kPrimaryColor.withValues(alpha: 0.1) 
+              : Colors.white.withValues(alpha: 0.05),
+          borderRadius: BorderRadius.circular(16),
           border: Border.all(
-            color: isSelected
-                ? const Color(0xFF22C55E)
-                : const Color(0xFF2A2A2A),
-            width: isSelected ? 1.5 : 1,
+            color: isSelected 
+                ? ColorConst.kPrimaryColor 
+                : Colors.white.withValues(alpha: 0.1),
+            width: isSelected ? 2 : 1,
           ),
         ),
         child: Row(
@@ -146,30 +117,26 @@ class _LanguageTile extends StatelessWidget {
               label,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 17,
-                fontWeight: FontWeight.w500,
+                fontSize: 18,
+                fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
                 fontFamily: isRtl ? 'Arial' : null,
               ),
               textDirection: isRtl ? TextDirection.rtl : TextDirection.ltr,
             ),
             AnimatedContainer(
               duration: const Duration(milliseconds: 200),
-              width: 28,
-              height: 28,
+              width: 26,
+              height: 26,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: isSelected
-                    ? const Color(0xFF22C55E)
-                    : Colors.transparent,
+                color: isSelected ? ColorConst.kPrimaryColor : Colors.transparent,
                 border: Border.all(
-                  color: isSelected
-                      ? const Color(0xFF22C55E)
-                      : const Color(0xFF3A3A3A),
-                  width: 1.5,
+                  color: isSelected ? ColorConst.kPrimaryColor : Colors.white.withValues(alpha: 0.2),
+                  width: 2,
                 ),
               ),
               child: isSelected
-                  ? const Icon(Icons.check, color: Colors.white, size: 16)
+                  ? const Icon(Icons.check, color: Colors.black, size: 16)
                   : null,
             ),
           ],

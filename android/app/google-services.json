@@ -7,17 +7,17 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1023406758540:android:41788b0639bf9bfe84b9a9",
+        "mobilesdk_app_id": "1:1023406758540:android:809f843de986fbcd84b9a9",
         "android_client_info": {
-          "package_name": "com.boostfunder"
+          "package_name": "com.boostfundr"
         }
       },
       "oauth_client": [
         {
-          "client_id": "1023406758540-h5deikmv8ijfr43pf4jlvcapmgoagr4t.apps.googleusercontent.com",
+          "client_id": "1023406758540-6ke19edb0in35a85k1cniiqhvc40jd3h.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.boostfunder",
+            "package_name": "com.boostfundr",
             "certificate_hash": "8edbac03e3b9831badc6b5f17739631e180fc320"
           }
         },
