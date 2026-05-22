@@ -11,6 +11,10 @@ class SubscriptionsController extends GetxController {
   final userRole = 'founder'.obs;
   final isLoading = false.obs;
 
+  // Founder funding goal calculator
+  final fundingGoalController = TextEditingController();
+  final calculatedFeeNumbers = <String, double>{}.obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -21,11 +25,43 @@ class SubscriptionsController extends GetxController {
     }
   }
 
+  @override
+  void onClose() {
+    fundingGoalController.dispose();
+    super.onClose();
+  }
+
   void _loadUserRole() {
     final user = storage.read('user');
     if (user != null && user['role'] != null) {
       userRole.value = user['role'];
     }
+  }
+
+  /// Called when the user types in the funding goal input field.
+  /// Recalculates fee for every plan based on the entered amount.
+  void onFundingGoalChanged(String value) {
+    final clean = value.replaceAll(',', '').replaceAll(' ', '');
+    final goal = double.tryParse(clean) ?? 0.0;
+    final Map<String, double> newFees = {};
+    for (final plan in plans) {
+      if (plan.successFee > 0 && goal > 0) {
+        newFees[plan.id] = goal * (plan.successFee / 100);
+      } else {
+        newFees[plan.id] = 0.0;
+      }
+    }
+    calculatedFeeNumbers.value = newFees;
+  }
+
+  /// Formats a number with commas, e.g. 1234567 → "1,234,567"
+  String formatNumber(double value) {
+    if (value <= 0) return '0';
+    final intVal = value.round();
+    return intVal.toString().replaceAllMapped(
+      RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
+      (m) => '${m[1]},',
+    );
   }
 
   Future<void> fetchCurrentSubscription() async {
@@ -89,7 +125,7 @@ class SubscriptionsController extends GetxController {
   }
 
   void subscribe(SubscriptionPlan plan) {
-    if (plan.price == 0) {
+    if (plan.price == 0 && plan.successFee == 0) {
       Get.snackbar(
         'Success',
         'You are now on the Free plan',
