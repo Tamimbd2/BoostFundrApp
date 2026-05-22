@@ -95,10 +95,8 @@ class HomeView extends GetView<HomeController> {
           TweenAnimationBuilder<double>(
             tween: Tween<double>(begin: 0.0, end: 1.0),
             duration: const Duration(milliseconds: 800),
-            builder: (context, value, child) => Opacity(
-              opacity: value,
-              child: child,
-            ),
+            builder: (context, value, child) =>
+                Opacity(opacity: value, child: child),
             child: Image.asset('assets/logo/logohome.png', height: 40),
           ),
 

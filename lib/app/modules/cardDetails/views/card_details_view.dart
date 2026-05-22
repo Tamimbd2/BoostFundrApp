@@ -232,7 +232,7 @@ class CardDetailsView extends GetView<CardDetailsController> {
                     ),
                     const SizedBox(height: 24),
 
-                    if (controller.faq.isNotEmpty) ...[
+                    if (controller.faqList.isNotEmpty) ...[
                       _buildSectionTitle('FAQ'),
                       const SizedBox(height: 10),
                       _buildFaqList(),
@@ -539,33 +539,11 @@ class CardDetailsView extends GetView<CardDetailsController> {
 
   Widget _buildFaqList() {
     return Column(
-      children: controller.faq.map((f) => Container(
-        margin: const EdgeInsets.only(bottom: 8),
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: Colors.white.withValues(alpha: 0.03),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: Row(
-          children: [
-            const Icon(
-              Icons.help_outline,
-              color: Colors.white24,
-              size: 16,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                f,
-                style: const TextStyle(
-                  color: Colors.white70,
-                  fontSize: 13,
-                ),
-              ),
-            ),
-          ],
-        ),
-      )).toList(),
+      children: controller.faqList.map((faqItem) {
+        final question = faqItem['question'] ?? '';
+        final answer = faqItem['answer'] ?? '';
+        return FaqTile(question: question, answer: answer);
+      }).toList(),
     );
   }
 
@@ -730,4 +708,82 @@ class CardDetailsView extends GetView<CardDetailsController> {
       ),
     ),
   );
+}
+
+class FaqTile extends StatefulWidget {
+  final String question;
+  final String answer;
+
+  const FaqTile({
+    super.key,
+    required this.question,
+    required this.answer,
+  });
+
+  @override
+  State<FaqTile> createState() => _FaqTileState();
+}
+
+class _FaqTileState extends State<FaqTile> {
+  bool _isExpanded = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.03),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: _isExpanded ? const Color(0xFF22C55E).withValues(alpha: 0.3) : Colors.transparent,
+          width: 1,
+        ),
+      ),
+      child: Theme(
+        data: Theme.of(context).copyWith(
+          dividerColor: Colors.transparent,
+          splashColor: Colors.transparent,
+          highlightColor: Colors.transparent,
+        ),
+        child: ExpansionTile(
+          iconColor: const Color(0xFF22C55E),
+          collapsedIconColor: Colors.white30,
+          onExpansionChanged: (expanded) {
+            setState(() {
+              _isExpanded = expanded;
+            });
+          },
+          leading: const Icon(
+            Icons.help_outline,
+            color: Colors.white24,
+            size: 18,
+          ),
+          title: Text(
+            widget.question,
+            style: const TextStyle(
+              color: Colors.white70,
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 44, right: 16, bottom: 16),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  widget.answer.isNotEmpty ? widget.answer : 'No answer provided.',
+                  style: const TextStyle(
+                    color: Colors.white60,
+                    fontSize: 12,
+                    height: 1.4,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

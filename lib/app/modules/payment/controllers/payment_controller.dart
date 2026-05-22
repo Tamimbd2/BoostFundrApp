@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -19,7 +20,8 @@ class PaymentMethod {
 
   factory PaymentMethod.fromJson(Map<String, dynamic> json) {
     return PaymentMethod(
-      paymentMethodId: (json['PaymentMethodId'] ?? json['paymentMethodId'] ?? 0) as int,
+      paymentMethodId:
+          (json['PaymentMethodId'] ?? json['paymentMethodId'] ?? 0) as int,
       paymentMethodEn: json['PaymentMethodEn'] ?? json['paymentMethodEn'] ?? '',
       paymentMethodAr: json['PaymentMethodAr'] ?? json['paymentMethodAr'] ?? '',
       paymentMethodImageUrl: json['ImageUrl'] ?? json['imageUrl'] ?? '',
@@ -32,6 +34,10 @@ class PaymentController extends GetxController {
   final planId = ''.obs;
   final planName = 'pro'.obs;
   final planPrice = '49'.obs;
+  final isFounderPlan = false.obs;
+  int? preselectedMethodId;
+  double fundingGoal = 0.0;
+  String founderId = '';
 
   final isProcessing = true.obs;
   final isLoadingMethods = true.obs;
@@ -50,7 +56,33 @@ class PaymentController extends GetxController {
       planId.value = args['planId'] ?? '';
       planName.value = args['planName']?.toString().toLowerCase() ?? 'pro';
       planPrice.value = args['planPrice'] ?? '49';
+      isFounderPlan.value = args['isFounder'] == true;
+      preselectedMethodId = args['selectedMethodId'] as int?;
+      fundingGoal = (args['fundingGoal'] as num?)?.toDouble() ?? 0.0;
     }
+
+    final userMap = storage.read('user');
+    if (userMap != null && userMap is Map) {
+      founderId = (userMap['id'] ?? userMap['_id'] ?? userMap['userId'] ?? '').toString();
+    }
+    if (founderId.isEmpty) {
+      final token = storage.read('token');
+      if (token != null && token.toString().contains('.')) {
+        try {
+          final parts = token.toString().split('.');
+          if (parts.length > 1) {
+            final payloadStr = utf8.decode(base64Url.decode(base64Url.normalize(parts[1])));
+            final payloadMap = jsonDecode(payloadStr);
+            if (payloadMap != null && payloadMap['userId'] != null) {
+              founderId = payloadMap['userId'].toString();
+            }
+          }
+        } catch (e) {
+          debugPrint('Error decoding JWT for userId: $e');
+        }
+      }
+    }
+    debugPrint('=== Resolved Founder ID: $founderId ===');
 
     fetchPaymentMethods();
   }
@@ -80,7 +112,11 @@ class PaymentController extends GetxController {
         if (data is List) {
           methodsList = data;
         } else if (data is Map) {
-          methodsList = data['paymentMethods'] ?? data['PaymentMethods'] ?? data['methods'] ?? [];
+          methodsList =
+              data['paymentMethods'] ??
+              data['PaymentMethods'] ??
+              data['methods'] ??
+              [];
         }
 
         if (methodsList.isNotEmpty) {
@@ -120,7 +156,6 @@ class PaymentController extends GetxController {
         );
         return apiMatch ?? req;
       }).toList();
-
     } catch (e) {
       debugPrint('Error fetching payment methods: $e');
       // Fallback to the 3 required methods
@@ -147,14 +182,33 @@ class PaymentController extends GetxController {
     } finally {
       isLoadingMethods.value = false;
       isProcessing.value = false;
+
+      if (preselectedMethodId != null) {
+        final match = paymentMethods.firstWhereOrNull((m) => m.paymentMethodId == preselectedMethodId);
+        if (match != null) {
+          selectedMethod.value = match;
+        } else {
+          selectedMethod.value = PaymentMethod(
+            paymentMethodId: preselectedMethodId!,
+            paymentMethodEn: preselectedMethodId == 6 ? 'Debit/Credit Cards' : (preselectedMethodId == 9 ? 'Apple Pay' : 'Google Pay'),
+            paymentMethodAr: '',
+            paymentMethodImageUrl: '',
+          );
+        }
+        processPayment(methodId: preselectedMethodId);
+      }
     }
   }
 
   Future<void> processPayment({int? methodId}) async {
     final id = methodId ?? selectedMethod.value?.paymentMethodId;
     if (id == null) {
-      Get.snackbar('Error', 'Please select a payment method',
-          backgroundColor: Colors.redAccent.withValues(alpha: 0.1), colorText: Colors.white);
+      Get.snackbar(
+        'Error',
+        'Please select a payment method',
+        backgroundColor: Colors.redAccent.withValues(alpha: 0.1),
+        colorText: Colors.white,
+      );
       return;
     }
 
@@ -163,20 +217,34 @@ class PaymentController extends GetxController {
       paymentUrl.value = '';
       errorMessage.value = '';
       final token = storage.read('token');
+      final headers = {
+        if (token != null) 'Authorization': 'Bearer $token',
+        'content-type': 'application/json',
+      };
 
-      final response = await GetConnect().post(
-        'https://boost-funder.onrender.com/api/v1/payments/create',
-        {
-          'planName': planName.value,
-          'paymentMethodId': id,
-        },
-        headers: {
-          if (token != null) 'Authorization': 'Bearer $token',
-          'content-type': 'application/json',
-        },
-      );
+      String endpoint = isFounderPlan.value
+          ? 'https://boost-funder.onrender.com/api/v1/payments/founder/create'
+          : 'https://boost-funder.onrender.com/api/v1/payments/create';
 
-      debugPrint('Payment Create Response: ${response.body}');
+      Map<String, dynamic> payload = isFounderPlan.value ? {
+        'founderId': founderId.isNotEmpty ? founderId : '6a0b166cece717032402b37a',
+        'packageId': planId.value.isNotEmpty ? planId.value : '6a055afa806dab031cffee3c',
+        'fundingGoal': fundingGoal > 0 ? fundingGoal : 1000000.0,
+        'paymentMethodId': id,
+      } : {
+        'planId': planId.value,
+        'packageId': planId.value,
+        'planName': planName.value,
+        'paymentMethodId': id,
+      };
+
+      debugPrint('=== Hitting Payment Create API: $endpoint ===');
+      debugPrint('Payload: ${jsonEncode(payload)}');
+
+      final response = await GetConnect().post(endpoint, payload, headers: headers);
+
+      debugPrint('Payment Create Response Status: ${response.statusCode}');
+      debugPrint('Payment Create Response Body: ${jsonEncode(response.body ?? {})}');
 
       if (response.status.isOk &&
           response.body != null &&
@@ -184,7 +252,7 @@ class PaymentController extends GetxController {
         final data = response.body['data'];
         String? url;
 
-        if (data is String) {
+        if (data is String && data.startsWith('http')) {
           url = data;
         } else if (data is Map) {
           url = data['url']?.toString() ??
@@ -194,17 +262,30 @@ class PaymentController extends GetxController {
               data['InvoiceURL']?.toString();
         }
 
-        if (url != null && url.isNotEmpty) {
+        if (url == null || url.isEmpty) {
+          url = response.body['url']?.toString() ??
+              response.body['payment_url']?.toString() ??
+              response.body['paymentUrl']?.toString() ??
+              response.body['PaymentURL']?.toString() ??
+              response.body['InvoiceURL']?.toString();
+        }
+
+        if (url != null && url.isNotEmpty && (url.startsWith('http') || url.startsWith('https'))) {
           debugPrint('Payment URL: $url');
           paymentUrl.value = url;
         } else {
-          errorMessage.value = 'Payment URL not found in response.';
+          debugPrint('=== Package selected successfully without payment URL redirect ===');
+          showSuccessDialog();
         }
       } else {
         final msg = response.body?['message'] ?? 'Failed to initiate payment';
         errorMessage.value = msg;
-        Get.snackbar('Payment Error', msg,
-            backgroundColor: Colors.redAccent.withValues(alpha: 0.1), colorText: Colors.white);
+        Get.snackbar(
+          'Payment Error',
+          msg,
+          backgroundColor: Colors.redAccent.withValues(alpha: 0.1),
+          colorText: Colors.white,
+        );
       }
     } catch (e) {
       debugPrint('Error creating payment: $e');
@@ -230,18 +311,29 @@ class PaymentController extends GetxController {
                   color: const Color(0xFF22C55E).withValues(alpha: 0.1),
                   shape: BoxShape.circle,
                 ),
-                child: const Icon(Icons.check_circle, color: Color(0xFF22C55E), size: 60),
+                child: const Icon(
+                  Icons.check_circle,
+                  color: Color(0xFF22C55E),
+                  size: 60,
+                ),
               ),
               const SizedBox(height: 24),
               const Text(
                 'Payment Successful!',
-                style: TextStyle(color: Colors.white, fontSize: 22, fontWeight: FontWeight.bold),
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 12),
               Text(
                 'Your ${planName.value.capitalizeFirst} subscription is now active.',
                 textAlign: TextAlign.center,
-                style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 14),
+                style: TextStyle(
+                  color: Colors.white.withValues(alpha: 0.6),
+                  fontSize: 14,
+                ),
               ),
               const SizedBox(height: 32),
               SizedBox(
@@ -254,10 +346,17 @@ class PaymentController extends GetxController {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFF22C55E),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
                   ),
-                  child: const Text('Go to Dashboard',
-                      style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  child: const Text(
+                    'Go to Dashboard',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
                 ),
               ),
             ],

@@ -252,6 +252,13 @@ class CreateCampaignController extends GetxController {
     try {
       isLoading.value = true;
 
+      // Automatically set funding goal to 1 if it is empty, '0', or '0.0'
+      if (goalAmountController.text.isEmpty ||
+          goalAmountController.text == '0' ||
+          goalAmountController.text == '0.0') {
+        goalAmountController.text = '1';
+      }
+
       if (currentStep.value == 1 && dealId == null) {
         // Step 1: Create the deal (POST)
         final formData = FormData({
@@ -262,6 +269,8 @@ class CreateCampaignController extends GetxController {
           'stage': stage.value,
           'location': locationController.text,
           'whatsappNumber': whatsappNumberController.text,
+          'goalAmount': 1,
+          'fundingGoal': 1,
         });
 
         if (selectedImages.isNotEmpty) {
@@ -297,6 +306,8 @@ class CreateCampaignController extends GetxController {
             'stage': stage.value,
             'location': locationController.text,
             'whatsappNumber': whatsappNumberController.text,
+            'goalAmount': 1,
+            'fundingGoal': 1,
           };
         } else if (currentStep.value == 2) {
           updateData = {

@@ -566,6 +566,7 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
           controller: controller.whatsappNumberController,
           isRequired: true,
           keyboardType: TextInputType.phone,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
         ),
       ],
     );
@@ -809,6 +810,7 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
     TextInputType keyboardType = TextInputType.text,
     bool readOnly = false,
     VoidCallback? onTap,
+    List<TextInputFormatter>? inputFormatters,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -838,6 +840,7 @@ class CreateCampaignView extends GetView<CreateCampaignController> {
           keyboardType: keyboardType,
           readOnly: readOnly,
           onTap: onTap,
+          inputFormatters: inputFormatters,
           style: const TextStyle(color: Colors.white, fontSize: 14),
           decoration: InputDecoration(
             hintText: hint,

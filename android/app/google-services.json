@@ -14,11 +14,19 @@
       },
       "oauth_client": [
         {
-          "client_id": "1023406758540-6ke19edb0in35a85k1cniiqhvc40jd3h.apps.googleusercontent.com",
+          "client_id": "1023406758540-88b4saq58jtda85fk1sqel13f6fb5kd3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.boostfundr",
-            "certificate_hash": "8edbac03e3b9831badc6b5f17739631e180fc320"
+            "certificate_hash": "115e7787b0ca56f4b075f4a621d3a0f191e25b11"
+          }
+        },
+        {
+          "client_id": "1023406758540-ismrlno50atsq2snsjqu4mi54v87d0am.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.boostfundr",
+            "certificate_hash": "ae74d589edead06f3ee8df3077466c96f1a5f884"
           }
         },
         {

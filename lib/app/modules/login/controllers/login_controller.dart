@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
+
 import '../../../data/providers/auth_provider.dart' as local;
 
 class LoginController extends GetxController {
@@ -186,52 +186,4 @@ class LoginController extends GetxController {
     }
   }
 
-  Future<void> loginWithFacebook() async {
-    try {
-      isLoading.value = true;
-      final LoginResult result = await FacebookAuth.instance.login();
-
-      if (result.status == LoginStatus.success) {
-        final AccessToken accessToken = result.accessToken!;
-        debugPrint("FB TOKEN: ${accessToken.token}");
-
-        final response = await _authProvider.facebookLogin({
-          "token": accessToken.token,
-          "role": "founder", // or investor, defaulting to founder as per request
-        });
-
-        if (response.status.isOk) {
-          final data = response.body['data'];
-          final token =
-              response.body['token'] ??
-              response.body['access_token'] ??
-              (data is Map ? data['token'] : null);
-
-          if (token != null) {
-            debugPrint('🔑 Backend Token: $token');
-            storage.write('token', token);
-            if (data is Map && data['user'] != null) {
-              storage.write('user', data['user']);
-            }
-            Get.offAllNamed('/home');
-          } else {
-            Get.offAllNamed('/home');
-          }
-        } else {
-          String message = response.body?['message'] ?? 'Facebook Login failed';
-          Get.snackbar('Login Failed', message);
-        }
-      } else {
-        debugPrint("Login failed: ${result.message}");
-        if (result.status != LoginStatus.cancelled) {
-          Get.snackbar('Login Failed', result.message ?? 'Unknown error');
-        }
-      }
-    } catch (e) {
-      debugPrint("Facebook Login Error: $e");
-      Get.snackbar('Error', 'Facebook Sign-In failed');
-    } finally {
-      isLoading.value = false;
-    }
-  }
 }

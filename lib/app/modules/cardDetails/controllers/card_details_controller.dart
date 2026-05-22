@@ -283,6 +283,40 @@ class CardDetailsController extends GetxController {
     return (data['faq'] as List?)?.map((e) => e.toString()).toList() ?? [];
   }
 
+  List<Map<String, String>> get faqList {
+    final data = dealData.value;
+    if (data == null) return [];
+    if (data['execution']?['qa'] != null && data['execution']['qa'] is List) {
+      return (data['execution']['qa'] as List)
+          .map((e) {
+            if (e is Map) {
+              return {
+                'question': e['question']?.toString() ?? '',
+                'answer': e['answer']?.toString() ?? '',
+              };
+            }
+            return <String, String>{};
+          })
+          .where((m) => m['question'] != null && m['question']!.isNotEmpty)
+          .toList();
+    }
+    if (data['faq'] != null && data['faq'] is List) {
+      return (data['faq'] as List).map((e) {
+        if (e is Map) {
+          return {
+            'question': e['question']?.toString() ?? '',
+            'answer': e['answer']?.toString() ?? '',
+          };
+        }
+        return {
+          'question': e.toString(),
+          'answer': '',
+        };
+      }).where((m) => m['question']!.isNotEmpty).toList();
+    }
+    return [];
+  }
+
   String get deadlineFormatted {
     if (deadline.isEmpty) return '—';
     try {

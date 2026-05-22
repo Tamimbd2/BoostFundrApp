@@ -18,16 +18,25 @@ class PaymentView extends GetView<PaymentController> {
         backgroundColor: darkBg,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white, size: 20),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: Colors.white,
+            size: 20,
+          ),
           onPressed: () => Get.back(),
         ),
-        title: Obx(() => Text(
-              controller.paymentUrl.value.isNotEmpty
-                  ? 'Secure Payment'
-                  : 'Choose Payment Method',
-              style: const TextStyle(
-                  color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
-            )),
+        title: Obx(
+          () => Text(
+            controller.paymentUrl.value.isNotEmpty
+                ? 'Secure Payment'
+                : 'Choose Payment Method',
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
         centerTitle: true,
       ),
       body: Obx(() {
@@ -39,22 +48,28 @@ class PaymentView extends GetView<PaymentController> {
               children: [
                 CircularProgressIndicator(color: neonGreen),
                 SizedBox(height: 16),
-                Text('Loading payment methods...',
-                    style: TextStyle(color: Colors.white54, fontSize: 13)),
+                Text(
+                  'Loading payment methods...',
+                  style: TextStyle(color: Colors.white54, fontSize: 13),
+                ),
               ],
             ),
           );
         }
 
         // ── Step 2: Creating payment (after method selected) ──────
-        if (controller.isProcessing.value && controller.paymentUrl.value.isEmpty) {
+        if (controller.isProcessing.value &&
+            controller.paymentUrl.value.isEmpty) {
           return const Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 CircularProgressIndicator(color: neonGreen),
                 SizedBox(height: 16),
-                Text('Initiating payment...', style: TextStyle(color: Colors.white54)),
+                Text(
+                  'Initiating payment...',
+                  style: TextStyle(color: Colors.white54),
+                ),
               ],
             ),
           );
@@ -65,8 +80,9 @@ class PaymentView extends GetView<PaymentController> {
           return Stack(
             children: [
               InAppWebView(
-                initialUrlRequest:
-                    URLRequest(url: WebUri(controller.paymentUrl.value)),
+                initialUrlRequest: URLRequest(
+                  url: WebUri(controller.paymentUrl.value),
+                ),
                 initialSettings: InAppWebViewSettings(
                   javaScriptEnabled: true,
                   useWideViewPort: true,
@@ -90,9 +106,13 @@ class PaymentView extends GetView<PaymentController> {
                         urlString.contains('error=')) {
                       Get.back();
                       Get.snackbar(
-                          'Payment Cancelled', 'The payment process was cancelled.',
-                          backgroundColor: Colors.orangeAccent.withValues(alpha: 0.1),
-                          colorText: Colors.white);
+                        'Payment Cancelled',
+                        'The payment process was cancelled.',
+                        backgroundColor: Colors.orangeAccent.withValues(
+                          alpha: 0.1,
+                        ),
+                        colorText: Colors.white,
+                      );
                     }
                   }
                 },
@@ -100,9 +120,13 @@ class PaymentView extends GetView<PaymentController> {
                   debugPrint('WebView Error: ${error.description}');
                 },
               ),
-              Obx(() => controller.isProcessing.value
-                  ? const Center(child: CircularProgressIndicator(color: neonGreen))
-                  : const SizedBox.shrink()),
+              Obx(
+                () => controller.isProcessing.value
+                    ? const Center(
+                        child: CircularProgressIndicator(color: neonGreen),
+                      )
+                    : const SizedBox.shrink(),
+              ),
             ],
           );
         }
@@ -130,25 +154,38 @@ class PaymentView extends GetView<PaymentController> {
                         color: neonGreen.withValues(alpha: 0.1),
                         shape: BoxShape.circle,
                       ),
-                      child: const Icon(Icons.workspace_premium, color: neonGreen, size: 28),
+                      child: const Icon(
+                        Icons.workspace_premium,
+                        color: neonGreen,
+                        size: 28,
+                      ),
                     ),
                     const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(
-                            '${controller.planName.value.capitalizeFirst} Plan',
-                            style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
-                          ),
                           Obx(() => Text(
-                                '\$${controller.planPrice.value}/month',
-                                style: TextStyle(
-                                    color: Colors.white.withValues(alpha: 0.5), fontSize: 14),
-                              )),
+                            controller.isFounderPlan.value 
+                                ? '${controller.planName.value.toUpperCase()} PACKAGE'
+                                : '${controller.planName.value.capitalizeFirst} Plan',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          )),
+                          Obx(
+                            () => Text(
+                              controller.isFounderPlan.value 
+                                  ? 'Total Fee: AED ${controller.planPrice.value}'
+                                  : 'AED ${controller.planPrice.value}/month',
+                              style: TextStyle(
+                                color: Colors.white.withValues(alpha: 0.5),
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
                         ],
                       ),
                     ),
@@ -161,7 +198,10 @@ class PaymentView extends GetView<PaymentController> {
               const Text(
                 'Select Payment Method',
                 style: TextStyle(
-                    color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               const SizedBox(height: 16),
 
@@ -172,16 +212,25 @@ class PaymentView extends GetView<PaymentController> {
                   decoration: BoxDecoration(
                     color: Colors.redAccent.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.redAccent.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: Colors.redAccent.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline, color: Colors.redAccent, size: 18),
+                      const Icon(
+                        Icons.error_outline,
+                        color: Colors.redAccent,
+                        size: 18,
+                      ),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
                           controller.errorMessage.value,
-                          style: const TextStyle(color: Colors.redAccent, fontSize: 13),
+                          style: const TextStyle(
+                            color: Colors.redAccent,
+                            fontSize: 13,
+                          ),
                         ),
                       ),
                     ],
@@ -195,7 +244,7 @@ class PaymentView extends GetView<PaymentController> {
                 return Obx(() {
                   final isSelected =
                       controller.selectedMethod.value?.paymentMethodId ==
-                          method.paymentMethodId;
+                      method.paymentMethodId;
                   return GestureDetector(
                     onTap: () => controller.selectedMethod.value = method,
                     behavior: HitTestBehavior.opaque,
@@ -230,7 +279,12 @@ class PaymentView extends GetView<PaymentController> {
                                     child: Image.network(
                                       method.paymentMethodImageUrl,
                                       fit: BoxFit.contain,
-                                      errorBuilder: (context, error, stackTrace) => _buildFallbackIcon(method, isSelected),
+                                      errorBuilder:
+                                          (context, error, stackTrace) =>
+                                              _buildFallbackIcon(
+                                                method,
+                                                isSelected,
+                                              ),
                                     ),
                                   )
                                 : _buildFallbackIcon(method, isSelected),
@@ -240,7 +294,9 @@ class PaymentView extends GetView<PaymentController> {
                             child: Text(
                               method.paymentMethodEn,
                               style: TextStyle(
-                                color: isSelected ? Colors.white : Colors.white70,
+                                color: isSelected
+                                    ? Colors.white
+                                    : Colors.white70,
                                 fontSize: 16,
                                 fontWeight: isSelected
                                     ? FontWeight.w600
@@ -265,8 +321,12 @@ class PaymentView extends GetView<PaymentController> {
                             ),
                             child: isSelected
                                 ? const Center(
-                                    child: Icon(Icons.check,
-                                        color: neonGreen, size: 14))
+                                    child: Icon(
+                                      Icons.check,
+                                      color: neonGreen,
+                                      size: 14,
+                                    ),
+                                  )
                                 : null,
                           ),
                         ],
@@ -279,53 +339,65 @@ class PaymentView extends GetView<PaymentController> {
               const SizedBox(height: 32),
 
               // Pay Button
-              Obx(() => SizedBox(
-                    width: double.infinity,
-                    height: 56,
-                    child: ElevatedButton(
-                      onPressed: controller.selectedMethod.value == null
-                          ? null
-                          : () => controller.processPayment(
-                              methodId:
-                                  controller.selectedMethod.value!.paymentMethodId),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: neonGreen,
-                        disabledBackgroundColor: neonGreen.withValues(alpha: 0.3),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Icon(Icons.lock, color: Colors.black, size: 18),
-                          const SizedBox(width: 8),
-                          Text(
-                            'Pay \$${controller.planPrice.value}',
-                            style: const TextStyle(
-                              color: Colors.black,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
+              Obx(
+                () => SizedBox(
+                  width: double.infinity,
+                  height: 56,
+                  child: ElevatedButton(
+                    onPressed: controller.selectedMethod.value == null
+                        ? null
+                        : () => controller.processPayment(
+                            methodId: controller
+                                .selectedMethod
+                                .value!
+                                .paymentMethodId,
                           ),
-                        ],
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: neonGreen,
+                      disabledBackgroundColor: neonGreen.withValues(alpha: 0.3),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
                       ),
+                      elevation: 0,
                     ),
-                  )),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.lock, color: Colors.black, size: 18),
+                        const SizedBox(width: 8),
+                        Text(
+                          controller.isFounderPlan.value 
+                              ? 'Pay AED ${controller.planPrice.value}'
+                              : 'Pay AED ${controller.planPrice.value}',
+                          style: const TextStyle(
+                            color: Colors.black,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
 
               const SizedBox(height: 16),
               Center(
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.lock_outline,
-                        color: Colors.white.withValues(alpha: 0.3), size: 14),
+                    Icon(
+                      Icons.lock_outline,
+                      color: Colors.white.withValues(alpha: 0.3),
+                      size: 14,
+                    ),
                     const SizedBox(width: 6),
                     Text(
                       'Secured by MyFatoorah',
                       style: TextStyle(
-                          color: Colors.white.withValues(alpha: 0.3), fontSize: 12),
+                        color: Colors.white.withValues(alpha: 0.3),
+                        fontSize: 12,
+                      ),
                     ),
                   ],
                 ),
@@ -340,7 +412,7 @@ class PaymentView extends GetView<PaymentController> {
 
   Widget _buildFallbackIcon(PaymentMethod method, bool isSelected) {
     const neonGreen = Color(0xFF22C55E);
-    
+
     IconData iconData;
     switch (method.paymentMethodId) {
       case 6:

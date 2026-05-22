@@ -53,21 +53,12 @@ class LoginView extends GetView<LoginController> {
                   const SizedBox(height: 32),
 
                   // Social Login Section
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SocialButton(
-                        iconPath: 'assets/logo/icon/google.svg',
-                        label: 'Google',
-                        onTap: () => _showRoleSelectionDialog(context),
-                      ),
-                      // const SizedBox(width: 12),
-                      // SocialButton(
-                      //   iconPath: 'assets/logo/icon/facebook.svg',
-                      //   label: 'Facebook',
-                      //   onTap: controller.loginWithFacebook,
-                      // ),
-                    ],
+                  Center(
+                    child: SocialButton(
+                      iconPath: 'assets/logo/icon/google.svg',
+                      label: 'Google',
+                      onTap: () => _showRoleSelectionDialog(context),
+                    ),
                   ),
 
                   const SizedBox(height: 24),
