@@ -39,7 +39,7 @@ class CommonEmptyState extends StatelessWidget {
               textAlign: TextAlign.center,
             ),
           if (other != null) gap12,
-          if (other != null) other,
+          ?other,
         ],
       ),
     );
