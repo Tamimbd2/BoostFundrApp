@@ -63,12 +63,6 @@ android {
         }
     }
 
-    packaging {
-        jniLibs {
-            useLegacyPackaging = true
-            keepDebugSymbols.add("**/*.so")
-        }
-    }
 }
 
 flutter {
