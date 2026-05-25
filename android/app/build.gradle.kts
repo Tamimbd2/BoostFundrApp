@@ -42,27 +42,27 @@ android {
 
     signingConfigs {
         create("release") {
-            keyAlias = keystoreProperties["keyAlias"] as String
-            keyPassword = keystoreProperties["keyPassword"] as String
-            storeFile = file(keystoreProperties["storeFile"] as String)
-            storePassword = keystoreProperties["storePassword"] as String
+            if (keystorePropertiesFile.exists()) {
+                keyAlias = keystoreProperties["keyAlias"] as String
+                keyPassword = keystoreProperties["keyPassword"] as String
+                storeFile = file(keystoreProperties["storeFile"] as String)
+                storePassword = keystoreProperties["storePassword"] as String
+            }
         }
     }
 
     buildTypes {
         getByName("release") {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = if (keystorePropertiesFile.exists()) {
+                signingConfigs.getByName("release")
+            } else {
+                signingConfigs.getByName("debug")
+            }
             isMinifyEnabled = false
             isShrinkResources = false
         }
     }
 
-    packaging {
-        jniLibs {
-            useLegacyPackaging = true
-            keepDebugSymbols.add("**/*.so")
-        }
-    }
 }
 
 flutter {
