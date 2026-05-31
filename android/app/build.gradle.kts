@@ -66,17 +66,26 @@ android {
             }
             isMinifyEnabled = false
             isShrinkResources = false
+            ndk {
+                debugSymbolLevel = "none"
+            }
         }
     }
 
     packaging {
         jniLibs {
             useLegacyPackaging = true
-            keepDebugSymbols.add("**/*.so")
+            doNotStrip.add("**/*.so")
         }
     }
 }
 
 flutter {
     source = "../.."
+}
+
+tasks.whenTaskAdded {
+    if (name.contains("strip") && name.contains("DebugSymbols")) {
+        enabled = false
+    }
 }
