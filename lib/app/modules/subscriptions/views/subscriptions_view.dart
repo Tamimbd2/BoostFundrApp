@@ -262,12 +262,11 @@ class SubscriptionsView extends GetView<SubscriptionsController> {
                   ),
 
                 ...(() {
-                  final currentFees = controller.calculatedFeeNumbers.value;
+                  final currentFees = controller.calculatedFeeNumbers;
                   return controller.plans.map((plan) {
                     final nameLower = plan.name.toLowerCase();
                     final isFree = nameLower == 'free' || plan.price == 0;
                     final isPopular = nameLower == 'pro' || nameLower == 'growth' || nameLower == 'popular' || nameLower == 'standard' || nameLower == 'gold' || plan.price == 49 || plan.price == 99;
-                    final isElite = nameLower == 'elite' || nameLower == 'premium' || nameLower == 'enterprise' || nameLower == 'platinum' || plan.price > 100;
 
                     final isCurrent = controller.currentPlan.value.toLowerCase() == nameLower || (controller.currentPlan.value.isEmpty && isFree);
 

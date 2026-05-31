@@ -1,4 +1,5 @@
 import 'package:boost_fundr/export.dart';
+import 'package:flutter/cupertino.dart';
 
 class AppTheme {
   static Color get primary => ColorConst.kPrimaryColor;
